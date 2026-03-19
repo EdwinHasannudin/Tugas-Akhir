@@ -392,16 +392,6 @@ export const ingredientsDatabase: Ingredient[] = [
     texture: 'lembut',
   },
   {
-    id: 'jagung-kuning',
-    name: 'Jagung Kuning',
-    category: 'sayuran',
-    energy: 0.15,
-    protein: 0.06,
-    carbs: 0.05,
-    fat: 0.01,
-    texture: 'padat',
-  },
-  {
     id: 'jamur-kuping',
     name: 'Jamur kuping',
     category: 'sayuran',
@@ -489,16 +479,6 @@ export const ingredientsDatabase: Ingredient[] = [
     protein: 0.01,
     carbs: 0.01,
     fat: 0.0,
-    texture: 'padat',
-  },
-  {
-    id: 'labu-kuning',
-    name: 'Labu kuning',
-    category: 'sayuran',
-    energy: 0.05,
-    protein: 0.02,
-    carbs: 0.02,
-    fat: 0.01,
     texture: 'padat',
   },
   {

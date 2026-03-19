@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { SearchPage } from './components/SearchPage';
-import { RecommendationPage } from './components/RecommendationPage';
-import { DemoSystemPage } from './components/DemoSystemPage';
-import { AboutMethodPage } from './components/AboutMethodPage';
+import { useState } from "react";
+import { SearchPage } from "./components/SearchPage";
+import { RecommendationPage } from "./components/RecommendationPage";
+import { DemoSystemPage } from "./components/DemoSystemPage";
 
 export interface Ingredient {
   id: string;
@@ -26,50 +25,40 @@ export interface Recipe {
   category: string;
 }
 
-type ViewMode = 'home' | 'demo' | 'recipe' | 'about';
+type ViewMode = "home" | "demo" | "recipe";
 
 export default function App() {
-  const [viewMode, setViewMode] = useState<ViewMode>('home');
-  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("home");
+  const [selectedRecipe, setSelectedRecipe] =
+    useState<Recipe | null>(null);
 
   const handleSelectRecipe = (recipe: Recipe) => {
     setSelectedRecipe(recipe);
-    setViewMode('recipe');
+    setViewMode("recipe");
   };
 
   const handleBackToHome = () => {
-    setViewMode('home');
+    setViewMode("home");
     setSelectedRecipe(null);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-green-50">
-      {viewMode === 'home' && (
-        <SearchPage 
+      {viewMode === "home" && (
+        <SearchPage
           onSelectRecipe={handleSelectRecipe}
-          onDemoSystem={() => setViewMode('demo')}
-          onAboutMethod={() => setViewMode('about')}
+          onDemoSystem={() => setViewMode("demo")}
         />
       )}
-      
-      {viewMode === 'demo' && (
-        <DemoSystemPage 
+
+      {viewMode === "demo" && (
+        <DemoSystemPage onBack={handleBackToHome} />
+      )}
+
+      {viewMode === "recipe" && selectedRecipe && (
+        <RecommendationPage
+          recipe={selectedRecipe}
           onBack={handleBackToHome}
-          onAboutMethod={() => setViewMode('about')}
-        />
-      )}
-      
-      {viewMode === 'about' && (
-        <AboutMethodPage 
-          onBack={handleBackToHome}
-          onTryDemo={() => setViewMode('demo')}
-        />
-      )}
-      
-      {viewMode === 'recipe' && selectedRecipe && (
-        <RecommendationPage 
-          recipe={selectedRecipe} 
-          onBack={handleBackToHome} 
         />
       )}
     </div>

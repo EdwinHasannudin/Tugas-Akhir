@@ -28,8 +28,8 @@ const WEIGHTS = {
   energy: 0.15,        // Energi/KKal (15%)
   protein: 0.15,       // Kandungan protein (15%)
   carbs: 0.15,         // Kandungan karbohidrat (15%)
-  fat: 0.15,           // Kandungan lemak (15%) - ditingkatkan dari 10%
-  texture: 0.20        // Tekstur (20%) - ditingkatkan dari 15%
+  fat: 0.15,           // Kandungan lemak (10% + 5%)
+  texture: 0.20        // Tekstur (15% + 5%)
 };
 
 /**

@@ -1,21 +1,16 @@
-import { useState, KeyboardEvent } from 'react';
-import { Search, ChefHat, Utensils, Target, Clock } from 'lucide-react';
+import { useState } from 'react';
+import { Search, ChefHat, Utensils, ArrowRight } from 'lucide-react';
 import { Recipe } from '../App';
 import { recipeData } from '../data/recipeData';
-<<<<<<< Updated upstream
-import { Logo } from './Logo';
-=======
 import bgImage from '../assets/Background.png';
 import { HeaderLogo } from './HeaderLogo';
->>>>>>> Stashed changes
 
 interface SearchPageProps {
   onSelectRecipe: (recipe: Recipe) => void;
   onDemoSystem: () => void;
-  onAboutMethod: () => void;
 }
 
-export function SearchPage({ onSelectRecipe, onDemoSystem, onAboutMethod }: SearchPageProps) {
+export function SearchPage({ onSelectRecipe, onDemoSystem }: SearchPageProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
   const [showSearch, setShowSearch] = useState(false);
@@ -26,13 +21,12 @@ export function SearchPage({ onSelectRecipe, onDemoSystem, onAboutMethod }: Sear
         recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredRecipes(results);
-      setShowSearch(true);
     } else {
       setFilteredRecipes([]);
     }
   };
 
-  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
@@ -41,92 +35,88 @@ export function SearchPage({ onSelectRecipe, onDemoSystem, onAboutMethod }: Sear
   if (!showSearch) {
     return (
       <div className="min-h-screen relative">
-        {/* Background Image with Overlay */}
+        {/* Background Image */}
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-gradient-to-br from-blue-50 to-blue-100"
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${bgImage})` }}
         >
-          <div className="absolute inset-0 bg-white/80 backdrop-blur-md"></div>
+          <div className="absolute inset-0 bg-white/85"></div>
         </div>
 
         {/* Content */}
         <div className="relative z-10">
           {/* Header */}
-          <header className="bg-transparent">
-            <div className="container mx-auto px-6 py-6 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center p-2">
-                  <Logo />
-                </div>
-                <div>
-                  <div className="font-bold text-gray-900 text-lg">Recipe</div>
-                  <div className="text-sm text-gray-600">Sistem Rekomendasi</div>
-                </div>
-              </div>
-              <nav className="flex gap-8">
-                <button onClick={onDemoSystem} className="text-gray-700 hover:text-blue-600 font-medium">Demo Sistem</button>
-                <button onClick={onAboutMethod} className="text-gray-700 hover:text-blue-600 font-medium">Tentang Metode</button>
+          <header className="border-b border-gray-200 bg-white/60 backdrop-blur-sm">
+            <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+              <HeaderLogo />
+              <nav className="flex gap-6">
+                <button 
+                  onClick={onDemoSystem} 
+                  className="text-gray-600 hover:text-blue-600 text-sm"
+                >
+                  Demo Sistem
+                </button>
               </nav>
             </div>
           </header>
 
-          {/* Hero Section */}
-          <div className="container mx-auto px-4 py-16 max-w-5xl">
-            <div className="text-center mb-12">
-              <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                Sistem Rekomendasi<br />
-                <span className="text-blue-600">Bahan Pengganti</span>
+          {/* Hero */}
+          <div className="max-w-3xl mx-auto px-6 pt-20 pb-16">
+            <div className="mb-10">
+              <p className="text-sm text-blue-600 mb-3 tracking-wide uppercase">Content Based Filtering</p>
+              <h1 className="text-3xl text-gray-900 mb-4 leading-snug" style={{ fontWeight: 700 }}>
+                Sistem Rekomendasi<br />Bahan Pengganti Masakan
               </h1>
-              <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-                Temukan bahan pengganti terbaik untuk resep masakan Anda menggunakan<br />
-                teknologi <span className="text-blue-600 font-semibold">Content Based Filtering</span>
+              <p className="text-gray-500 max-w-lg leading-relaxed" style={{ fontSize: '15px' }}>
+                Cari alternatif bahan masakan berdasarkan kesamaan nutrisi, tekstur, dan kategori. 
+                Cukup masukkan nama masakan, sistem akan memberikan rekomendasi pengganti yang paling mirip.
               </p>
             </div>
 
-            {/* Feature Cards */}
-            <div className="grid md:grid-cols-2 gap-8 mb-12 max-w-4xl mx-auto">
-              <div className="bg-white rounded-3xl shadow-xl p-10 text-center">
-                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
-                    <Target className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Akurat</h3>
-                <p className="text-gray-600 text-lg leading-relaxed">
-                  Rekomendasi berdasarkan similarity score dengan tingkat akurasi tinggi
-                </p>
-              </div>
-
-              <div className="bg-white rounded-3xl shadow-xl p-10 text-center">
-                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
-                    <Clock className="w-8 h-8 text-white" />
-                  </div>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Instan</h3>
-                <p className="text-gray-600 text-lg leading-relaxed">
-                  Hasil rekomendasi dalam hitungan detik dengan interface yang mudah
-                </p>
-              </div>
-            </div>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-wrap items-center justify-center gap-6">
+            {/* CTA */}
+            <div className="flex flex-wrap gap-3">
               <button
-                onClick={() => {
-                  setShowSearch(true);
-                  onDemoSystem();
-                }}
-                className="px-10 py-4 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all font-semibold shadow-lg hover:shadow-xl flex items-center gap-3 text-lg"
+                onClick={onDemoSystem}
+                className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm flex items-center gap-2"
               >
-                <Search className="w-5 h-5" />
-                Coba Demo Sekarang
+                Coba Demo
+                <ArrowRight className="w-4 h-4" />
               </button>
-              <button 
-                onClick={onAboutMethod}
-                className="px-10 py-4 bg-white text-blue-600 rounded-full hover:bg-gray-50 transition-all font-semibold shadow-lg border-2 border-blue-600 text-lg"
-              >
-                Pelajari Metode
-              </button>
+            </div>
+          </div>
+
+          {/* Info Cards */}
+          <div className="max-w-3xl mx-auto px-6 pb-20">
+            <div className="grid sm:grid-cols-3 gap-4">
+              <div className="bg-white border border-gray-200 rounded-lg p-5">
+                <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center mb-3">
+                  <Search className="w-4 h-4 text-blue-600" />
+                </div>
+                <h3 className="text-gray-900 mb-1" style={{ fontSize: '14px', fontWeight: 600 }}>Deteksi Otomatis</h3>
+                <p className="text-gray-500" style={{ fontSize: '13px', lineHeight: '1.5' }}>
+                  Bahan utama terdeteksi langsung dari nama masakan yang Anda input
+                </p>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-lg p-5">
+                <div className="w-9 h-9 bg-green-50 rounded-lg flex items-center justify-center mb-3">
+                  <ChefHat className="w-4 h-4 text-green-600" />
+                </div>
+                <h3 className="text-gray-900 mb-1" style={{ fontSize: '14px', fontWeight: 600 }}>6 Kriteria</h3>
+                <p className="text-gray-500" style={{ fontSize: '13px', lineHeight: '1.5' }}>
+                  Energi, protein, lemak, karbohidrat, tekstur, dan kategori bahan
+                </p>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-lg p-5">
+                <div className="w-9 h-9 bg-orange-50 rounded-lg flex items-center justify-center mb-3">
+                  <Utensils className="w-4 h-4 text-orange-600" />
+                </div>
+                <h3 className="text-gray-900 mb-1" style={{ fontSize: '14px', fontWeight: 600 }}>Similarity Score</h3>
+                <p className="text-gray-500" style={{ fontSize: '13px', lineHeight: '1.5' }}>
+                  Weighted Sum untuk menghasilkan skor kemiripan yang akurat
+                </p>
+              </div>
             </div>
           </div>
         </div>

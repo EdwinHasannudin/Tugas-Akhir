@@ -1,7 +1,7 @@
 
   # Sistem Rekomendasi Masakan
 
-  This is a code bundle for Sistem Rekomendasi Masakan. The original project is available at https://www.figma.com/design/vU2coitgCwUoBJusVhqTXe/Tugas-Akhir?node-id=174-93&p=f&t=y91OaI0zNmE3xX9T-0.
+  This is a code bundle for Sistem Rekomendasi Masakan. The original project is available at https://www.figma.com/design/Sn4vDW4qAm9XaBkezA9k5h/Sistem-Rekomendasi-Masakan.
 
   ## Running the code
 

@@ -3,6 +3,7 @@ import { Search, ArrowLeft, Utensils } from 'lucide-react';
 import { Ingredient } from '../App';
 import { ingredientsDatabase } from '../data/ingredientsData';
 import { calculateSimilarity } from '../utils/contentBasedFiltering';
+import { detectIngredientFromDish } from '../utils/ingredientSearch';
 import { HeaderLogo } from './HeaderLogo';
 
 interface DemoSystemPageProps {
@@ -17,16 +18,6 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
     similarity: number;
   }>>([]);
   const [showResults, setShowResults] = useState(false);
-
-  const detectIngredientFromDish = (dish: string): Ingredient | null => {
-    const dishLower = dish.toLowerCase();
-    for (const ingredient of ingredientsDatabase) {
-      if (dishLower.includes(ingredient.name.toLowerCase())) {
-        return ingredient;
-      }
-    }
-    return null;
-  };
 
   const handleSearch = () => {
     if (!dishInput.trim()) return;

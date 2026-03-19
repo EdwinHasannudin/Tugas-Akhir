@@ -3,7 +3,12 @@ import { Search, ArrowLeft, Sparkles } from 'lucide-react';
 import { Ingredient } from '../App';
 import { ingredientsDatabase } from '../data/ingredientsData';
 import { calculateSimilarity } from '../utils/contentBasedFiltering';
+<<<<<<< Updated upstream
 import { Logo } from './Logo';
+=======
+import { getClosestIngredient } from '../utils/ingredientSearch';
+import { HeaderLogo } from './HeaderLogo';
+>>>>>>> Stashed changes
 
 interface DemoSystemPageProps {
   onBack: () => void;
@@ -20,6 +25,7 @@ export function DemoSystemPage({ onBack, onAboutMethod }: DemoSystemPageProps) {
   }>>([]);
   const [showResults, setShowResults] = useState(false);
 
+<<<<<<< Updated upstream
   // Function to detect ingredient from dish name
   const detectIngredientFromDish = (dish: string): Ingredient | null => {
     const dishLower = dish.toLowerCase();
@@ -39,14 +45,26 @@ export function DemoSystemPage({ onBack, onAboutMethod }: DemoSystemPageProps) {
 
     const detected = detectIngredientFromDish(dishInput);
     
+=======
+  const handleSearch = () => {
+    if (!dishInput.trim()) return;
+
+    // Cari bahan yang sesuai di ingredientsData.ts
+    const detected = getClosestIngredient(dishInput);
+
+>>>>>>> Stashed changes
     if (!detected) {
-      alert('Maaf, bahan tidak terdeteksi. Coba masukkan nama masakan yang lebih spesifik seperti "Kare Ayam", "Rendang Sapi", "Soto Ayam", dll.');
+      alert('Maaf, bahan tidak terdeteksi. Coba masukkan nama bahan seperti "Ayam", "Bayam", "Ikan Mas", "Daging Sapi", dll.');
       return;
     }
 
     setDetectedIngredient(detected);
 
+<<<<<<< Updated upstream
     // Calculate recommendations
+=======
+    // Hitung rekomendasi bahan pengganti
+>>>>>>> Stashed changes
     const recs = ingredientsDatabase
       .filter(item => item.id !== detected.id)
       .map(item => ({
@@ -191,11 +209,19 @@ export function DemoSystemPage({ onBack, onAboutMethod }: DemoSystemPageProps) {
                 </button>
               </div>
 
+<<<<<<< Updated upstream
               {/* Popular Suggestions */}
               <div className="max-w-2xl mx-auto">
                 <p className="text-sm text-gray-500 mb-3 text-center">Contoh masakan populer:</p>
                 <div className="flex flex-wrap justify-center gap-2">
                   {['Kare Ayam', 'Rendang Sapi', 'Gulai Kambing', 'Soto Ayam', 'Pepes Ikan'].map((suggestion) => (
+=======
+              {/* Suggestions */}
+              <div>
+                <p className="text-xs text-gray-400 mb-2">Coba salah satu:</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {['Kare Ayam', 'Rendang Sapi', 'Gulai Kambing', 'Soto Ayam', 'Pepes Ikan'].map((s) => (
+>>>>>>> Stashed changes
                     <button
                       key={suggestion}
                       onClick={() => setDishInput(suggestion)}
@@ -209,6 +235,7 @@ export function DemoSystemPage({ onBack, onAboutMethod }: DemoSystemPageProps) {
             </div>
           </>
         ) : (
+<<<<<<< Updated upstream
           /* Results Section */
           <div className="space-y-6">
             {/* Header Info */}
@@ -217,6 +244,34 @@ export function DemoSystemPage({ onBack, onAboutMethod }: DemoSystemPageProps) {
                 <div className="flex-1">
                   <div className="text-sm text-gray-500 mb-2">Masakan yang ingin dibuat:</div>
                   <h2 className="text-3xl font-bold text-gray-900">{dishInput}</h2>
+=======
+          /* Results */
+          <div>
+            {/* Back + Title */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <p className="text-xs text-gray-400 mb-1">Bahan yang Dicari</p>
+                <h1 className="text-xl text-gray-900" style={{ fontWeight: 700 }}>{dishInput}</h1>
+              </div>
+              <button
+                onClick={handleReset}
+                className="text-sm text-gray-500 hover:text-blue-600 flex items-center gap-1.5"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Cari lagi
+              </button>
+            </div>
+
+            {/* Detected Ingredient */}
+            <div className="bg-white border border-gray-200 rounded-lg p-5 mb-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
+                  <Utensils className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400">Bahan utama terdeteksi</p>
+                  <p className="text-gray-900" style={{ fontSize: '15px', fontWeight: 600 }}>{detectedIngredient?.name} <span className="text-gray-400" style={{ fontWeight: 400, fontSize: '13px' }}>— {detectedIngredient?.category}</span></p>
+>>>>>>> Stashed changes
                 </div>
                 <button
                   onClick={handleReset}

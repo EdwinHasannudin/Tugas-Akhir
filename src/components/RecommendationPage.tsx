@@ -45,21 +45,22 @@ export function RecommendationPage({ recipe, onBack }: RecommendationPageProps) 
       reasons.push(`Tekstur serupa: ${substitute.texture}`);
     }
     
-    if (original.flavor === substitute.flavor) {
-      reasons.push(`Rasa mirip: ${substitute.flavor}`);
-    }
-    
     const proteinDiff = Math.abs(original.protein - substitute.protein);
-    if (proteinDiff < 5) {
+    if (proteinDiff < 0.1) {
       reasons.push('Kandungan protein mirip');
     }
     
     const carbsDiff = Math.abs(original.carbs - substitute.carbs);
-    if (carbsDiff < 10) {
+    if (carbsDiff < 0.05) {
       reasons.push('Kandungan karbohidrat serupa');
     }
     
-    return reasons;
+    const energyDiff = Math.abs(original.energy - substitute.energy);
+    if (energyDiff < 0.1) {
+      reasons.push('Kandungan energi mirip');
+    }
+    
+    return reasons.length > 0 ? reasons : ['Cocok sebagai pengganti'];
   };
 
   const getSimilarityColor = (similarity: number) => {

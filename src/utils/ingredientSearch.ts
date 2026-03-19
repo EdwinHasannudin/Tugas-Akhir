@@ -1,0 +1,323 @@
+import { Ingredient } from '../App';
+import { ingredientsDatabase } from '../data/ingredientsData';
+
+/**
+ * Search dan filter ingredients dengan smart matching
+ * Priority:
+ * 1. Exact match (case-insensitive)
+ * 2. Word start match (bayam = "Bayam" matches "Bayam Merah")
+ * 3. Substring match (tapi hindari "ayam" ketika "bayam")
+ */
+
+export interface SearchResult {
+  ingredient: Ingredient;
+  score: number; // 0-1, higher = better match
+  matchType: 'exact' | 'word-start' | 'substring';
+}
+
+// ============================================================
+// Kata-kata masak/metode yang BUKAN bahan — harus di-skip
+// ============================================================
+const COOKING_TERMS = new Set([
+  // Metode masak
+  'goreng', 'bakar', 'rebus', 'kukus', 'panggang', 'tumis', 'sangrai',
+  'oseng', 'ceplok', 'geprek', 'penyet', 'rica', 'balado', 'sambal',
+  // Jenis masakan
+  'kare', 'kari', 'gulai', 'soto', 'rawon', 'opor', 'rendang', 'pepes',
+  'semur', 'sop', 'sup', 'tongseng', 'lodeh', 'sayur', 'laksa', 'sup',
+  'pindang', 'pallu', 'acar', 'urap', 'gado', 'pecel', 'rujak',
+  'capcay', 'sapo', 'asam', 'manis', 'pedas', 'asin',
+  // Karbohidrat / base (bukan bahan utama protein/sayur)
+  'nasi', 'mie', 'mi', 'bihun', 'kwetiau', 'bakso', 'bakmi',
+  'lontong', 'ketupat', 'bubur',
+  // Kata bantu umum
+  'ala', 'khas', 'spesial', 'special', 'hari', 'ini', 'enak', 'lezat',
+  'sederhana', 'rumahan', 'padang', 'jawa', 'sunda', 'manado', 'bali',
+]);
+
+// ============================================================
+// Mapping keyword pendek → nama ingredient di database
+// ============================================================
+const KEYWORD_ALIASES: Record<string, string[]> = {
+  'ayam':     ['Ayam'],
+  'bebek':    ['Bebek (itik)'],
+  'itik':     ['Bebek (itik)'],
+  'sapi':     ['Daging Sapi'],
+  'kambing':  ['Daging Kambing'],
+  'kerbau':   ['Daging Kerbau'],
+  'cumi':     ['Cumi-cumi segar'],
+  'udang':    ['Udang segar', 'Udang besar segar', 'Udang galah segar'],
+  'kepiting': ['Kepiting'],
+  'kerang':   ['Kerang'],
+  'ikan':     ['Ikan Segar'],
+  'bandeng':  ['Ikan Bandeng'],
+  'bawal':    ['Ikan Bawal'],
+  'lele':     ['Ikan Segar'],
+  'gurame':   ['Ikan Segar'],
+  'nila':     ['Ikan Segar'],
+  'patin':    ['Ikan Patin segar'],
+  'tongkol':  ['Ikan tongkol segar'],
+  'tuna':     ['Ikan cakalang segar'],
+  'cakalang': ['Ikan cakalang segar'],
+  'kakap':    ['Ikan kakap segar'],
+  'kembung':  ['Ikan Kembung'],
+  'gabus':    ['Ikan Gabus segar'],
+  'sarden':   ['Ikan sarden segar'],
+  'teri':     ['Ikan teri segar'],
+  'mas':      ['Ikan Mas'],
+  'mujair':   ['Ikan Mujair segar'],
+  'tahu':     ['Tahu'],
+  'tempe':    ['Tempe pasar segar'],
+  'telur':    ['Telur Ayam'],
+  'bayam':    ['Bayam segar', 'Bayam Merah'],
+  'kangkung': ['Kangkung'],
+  'sawi':     ['Sawi'],
+  'terong':   ['Terong'],
+  'kentang':  ['Kentang'],
+  'wortel':   ['Wortel Segar'],
+  'buncis':   ['Buncis'],
+  'tomat':    ['Tomat Masak'],
+  'selada':   ['Selada'],
+  'lobak':    ['Lobak'],
+  'rebung':   ['Rebung'],
+  'labu':     ['Labu Siam'],
+  'ketimun':  ['Ketimun'],
+  'timun':    ['Ketimun'],
+  'oyong':    ['Gambas (Oyong)'],
+  'gambas':   ['Gambas (Oyong)'],
+  'babat':    ['Sapi babat segar'],
+  'usus':     ['Usus Sapi'],
+  'hati':     ['Sapi liver segar'],
+  'liver':    ['Sapi liver segar'],
+};
+
+/**
+ * Check if query matches word at word boundary
+ * e.g., "bayam" matches "Bayam Segar" but not "Daging Sapi"
+ */
+const isWordMatch = (query: string, text: string): boolean => {
+  const words = text.toLowerCase().split(/\s+/);
+  const queryLower = query.toLowerCase();
+  return words.some(word => 
+    word === queryLower || 
+    word.startsWith(queryLower)
+  );
+};
+
+/**
+ * Search ingredients dengan query
+ * Return sorted by relevance
+ */
+export const searchIngredients = (query: string): SearchResult[] => {
+  if (!query.trim()) return [];
+
+  const queryLower = query.toLowerCase().trim();
+  const results: SearchResult[] = [];
+
+  for (const ingredient of ingredientsDatabase) {
+    const nameLower = ingredient.name.toLowerCase();
+    let score = 0;
+    let matchType: 'exact' | 'word-start' | 'substring' = 'substring';
+
+    // 1. Exact match - nama bahan sama persis
+    if (nameLower === queryLower) {
+      score = 1.0;
+      matchType = 'exact';
+    }
+    // 2. Word start match - bayam matches "Bayam Merah", "Bayam Segar"
+    else if (isWordMatch(queryLower, ingredient.name)) {
+      score = 0.9;
+      matchType = 'word-start';
+    }
+    // 3. Substring match - BUT dengan penalti untuk false positives
+    else if (nameLower.includes(queryLower)) {
+      // Hindari "ayam" ketika cari "bayam"
+      // Cek word boundary lebih ketat
+      const words = nameLower.split(/\s+/);
+      const foundInWord = words.some(w => w.includes(queryLower));
+      
+      if (foundInWord) {
+        score = 0.7;
+        matchType = 'substring';
+      }
+    }
+
+    if (score > 0) {
+      results.push({
+        ingredient,
+        score,
+        matchType
+      });
+    }
+  }
+
+  // Sort by score (descending), then by name (ascending)
+  return results.sort((a, b) => {
+    if (b.score !== a.score) {
+      return b.score - a.score;
+    }
+    return a.ingredient.name.localeCompare(b.ingredient.name);
+  });
+};
+
+/**
+ * Get single best match ingredient
+ * Sekarang coba detectIngredientFromDish dulu, baru fallback ke searchIngredients
+ */
+export const getClosestIngredient = (query: string): Ingredient | null => {
+  // 1. Coba deteksi dari nama masakan (smart detection)
+  const dishDetected = detectIngredientFromDish(query);
+  if (dishDetected) return dishDetected;
+
+  // 2. Fallback: cari langsung sebagai nama bahan
+  const results = searchIngredients(query);
+  
+  if (results.length === 0) return null;
+  
+  // Return exact match jika ada
+  const exactMatch = results.find(r => r.matchType === 'exact');
+  if (exactMatch) return exactMatch.ingredient;
+  
+  // Return word-start match dengan score tinggi
+  const wordMatch = results.find(r => r.matchType === 'word-start' && r.score >= 0.8);
+  if (wordMatch) return wordMatch.ingredient;
+  
+  // Return best substring match dengan score cukup tinggi
+  const substringMatch = results[0];
+  if (substringMatch && substringMatch.score >= 0.7) {
+    return substringMatch.ingredient;
+  }
+  
+  return null;
+};
+
+/**
+ * Get autocomplete suggestions
+ * Limit ke top N results
+ */
+export const getIngredientSuggestions = (query: string, limit: number = 10): Ingredient[] => {
+  return searchIngredients(query)
+    .slice(0, limit)
+    .map(r => r.ingredient);
+};
+
+/**
+ * Helper: cari ingredient di database by nama (case-insensitive)
+ */
+const findIngredientByName = (name: string): Ingredient | null => {
+  const lower = name.toLowerCase();
+  return ingredientsDatabase.find(
+    ing => ing.name.toLowerCase() === lower
+  ) ?? null;
+};
+
+/**
+ * Detect ingredient dari nama masakan
+ * 
+ * Alur:
+ * 1. Pecah input jadi kata-kata
+ * 2. Buang kata-kata yang merupakan istilah masak (goreng, bakar, kare, dll)
+ * 3. Coba cocokkan multi-word combo (2 kata) dulu, lalu single word
+ * 4. Gunakan alias mapping untuk keyword pendek
+ * 5. Prioritaskan lauk > sayuran
+ */
+export const detectIngredientFromDish = (dishName: string): Ingredient | null => {
+  if (!dishName.trim()) return null;
+
+  const words = dishName.toLowerCase().trim().split(/\s+/);
+  
+  // Filter kata-kata masak
+  const ingredientWords = words.filter(w => !COOKING_TERMS.has(w));
+
+  // Jika semua kata terfilter, gunakan kata asli (mungkin user langsung ketik nama bahan)
+  const wordsToUse = ingredientWords.length > 0 ? ingredientWords : words;
+
+  // ---- Tahap 1: Coba cocokkan 2-word combos ----
+  const twoWordMatches: Ingredient[] = [];
+  for (let i = 0; i < wordsToUse.length - 1; i++) {
+    const combo = wordsToUse[i] + ' ' + wordsToUse[i + 1];
+    
+    // Cek alias 2-word
+    for (const [keyword, names] of Object.entries(KEYWORD_ALIASES)) {
+      if (combo.includes(keyword)) {
+        for (const n of names) {
+          const found = findIngredientByName(n);
+          if (found) twoWordMatches.push(found);
+        }
+      }
+    }
+
+    // Cek langsung di database
+    for (const ing of ingredientsDatabase) {
+      const ingLower = ing.name.toLowerCase();
+      if (ingLower === combo || ingLower.startsWith(combo) || combo.includes(ingLower)) {
+        twoWordMatches.push(ing);
+      }
+    }
+  }
+
+  if (twoWordMatches.length > 0) {
+    // Prioritas lauk
+    const lauk = twoWordMatches.find(m => m.category === 'lauk');
+    if (lauk) return lauk;
+    return twoWordMatches[0];
+  }
+
+  // ---- Tahap 2: Coba cocokkan single words via alias ----
+  const singleMatches: Ingredient[] = [];
+  for (const word of wordsToUse) {
+    // Cek alias mapping
+    const aliasNames = KEYWORD_ALIASES[word];
+    if (aliasNames) {
+      for (const n of aliasNames) {
+        const found = findIngredientByName(n);
+        if (found) singleMatches.push(found);
+      }
+    }
+  }
+
+  if (singleMatches.length > 0) {
+    const lauk = singleMatches.find(m => m.category === 'lauk');
+    if (lauk) return lauk;
+    return singleMatches[0];
+  }
+
+  // ---- Tahap 3: Coba word-boundary match langsung di database ----
+  const directMatches: Ingredient[] = [];
+  for (const word of wordsToUse) {
+    if (word.length < 3) continue; // skip kata terlalu pendek
+    for (const ing of ingredientsDatabase) {
+      const ingWords = ing.name.toLowerCase().split(/\s+/);
+      // Word harus match di word boundary, bukan substring
+      const isMatch = ingWords.some(iw => iw === word || iw.startsWith(word));
+      if (isMatch) {
+        directMatches.push(ing);
+      }
+    }
+  }
+
+  if (directMatches.length > 0) {
+    const lauk = directMatches.find(m => m.category === 'lauk');
+    if (lauk) return lauk;
+    return directMatches[0];
+  }
+
+  return null;
+};
+
+/**
+ * Get all unique categories sorted
+ */
+export const getCategories = (): string[] => {
+  const categories = new Set(ingredientsDatabase.map(ing => ing.category));
+  return Array.from(categories).sort();
+};
+
+/**
+ * Filter ingredients by category
+ */
+export const filterByCategory = (query: string, category: string): Ingredient[] => {
+  return searchIngredients(query)
+    .filter(r => r.ingredient.category === category)
+    .map(r => r.ingredient);
+};

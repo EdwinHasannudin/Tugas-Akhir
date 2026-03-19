@@ -2,7 +2,12 @@ import { useState, KeyboardEvent } from 'react';
 import { Search, ChefHat, Utensils, Target, Clock } from 'lucide-react';
 import { Recipe } from '../App';
 import { recipeData } from '../data/recipeData';
+<<<<<<< Updated upstream
 import { Logo } from './Logo';
+=======
+import bgImage from '../assets/Background.png';
+import { HeaderLogo } from './HeaderLogo';
+>>>>>>> Stashed changes
 
 interface SearchPageProps {
   onSelectRecipe: (recipe: Recipe) => void;

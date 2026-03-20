@@ -5,11 +5,6 @@ import { Ingredient } from '../App';
  * Menghitung similarity antara dua bahan berdasarkan berbagai fitur
  */
 
-// Normalisasi nilai numerik ke range 0-1
-const normalize = (value: number, min: number, max: number): number => {
-  if (max === min) return 0;
-  return (value - min) / (max - min);
-};
 
 // Hitung similarity untuk nilai numerik menggunakan inverse of absolute difference
 const numericalSimilarity = (val1: number, val2: number, maxDiff: number): number => {

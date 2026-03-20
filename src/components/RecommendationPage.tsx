@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Info, Lightbulb, TrendingUp, CheckCircle2 } from 'lucide-react';
+import { Info, Lightbulb, TrendingUp, CheckCircle2 } from 'lucide-react';
 import { Recipe, Ingredient } from '../App';
 import { ingredientsDatabase } from '../data/ingredientsData';
 import { calculateSimilarity } from '../utils/contentBasedFiltering';

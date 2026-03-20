@@ -13,7 +13,7 @@ interface SearchPageProps {
 export function SearchPage({ onSelectRecipe, onDemoSystem }: SearchPageProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
-  const [showSearch, setShowSearch] = useState(false);
+  const [showSearch] = useState(false);
 
   const handleSearch = () => {
     if (searchQuery.trim()) {

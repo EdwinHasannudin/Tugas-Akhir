@@ -1,4 +1,4 @@
-import { Utensils } from 'lucide-react';
+
 import logoImage from '../assets/Logo.png';
 
 interface HeaderLogoProps {

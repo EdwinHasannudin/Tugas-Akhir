@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { SearchPage } from "./components/SearchPage";
-import { RecommendationPage } from "./components/RecommendationPage";
 import { DemoSystemPage } from "./components/DemoSystemPage";
 
 export interface Ingredient {
@@ -25,41 +24,25 @@ export interface Recipe {
   category: string;
 }
 
-type ViewMode = "home" | "demo" | "recipe";
+type ViewMode = "home" | "demo";
 
 export default function App() {
   const [viewMode, setViewMode] = useState<ViewMode>("home");
-  const [selectedRecipe, setSelectedRecipe] =
-    useState<Recipe | null>(null);
-
-  const handleSelectRecipe = (recipe: Recipe) => {
-    setSelectedRecipe(recipe);
-    setViewMode("recipe");
-  };
 
   const handleBackToHome = () => {
     setViewMode("home");
-    setSelectedRecipe(null);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-green-50">
       {viewMode === "home" && (
         <SearchPage
-          onSelectRecipe={handleSelectRecipe}
           onDemoSystem={() => setViewMode("demo")}
         />
       )}
 
       {viewMode === "demo" && (
         <DemoSystemPage onBack={handleBackToHome} />
-      )}
-
-      {viewMode === "recipe" && selectedRecipe && (
-        <RecommendationPage
-          recipe={selectedRecipe}
-          onBack={handleBackToHome}
-        />
       )}
     </div>
   );

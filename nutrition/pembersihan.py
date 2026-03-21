@@ -162,7 +162,7 @@ print("[STEP] 2: Menghapus bahan makanan berdasarkan kata kunci...")
 kata_kunci_dihapus = [
     'andaliman', 'pohon', 'babi', 'anjing', 'kuda', 'domba', 'burung', 'angsa', 
     'belut', 'katak', 'keong', 'kodok', 'kura-kura', 'ulat sagu', 'ham', 'hiu', 
-    'kotiu', 'kelinci', 'buaya', 'dodol', 'penyu', 'masakan', 'goreng', 'kukus', 
+    'kotiu', 'buaya', 'dodol', 'penyu', 'masakan', 'goreng', 'kukus', 'lodeh',
     'ginjal', 'sosis', 'lilin', 'pempek', 'kue', 'martabak', 'otak', 'ular', 
     'purundawa', 'putri malu', 'purut', 'sate', 'sarimuka', 'tekwan', 'tinira', 
     'camilan', 'ketoprak', 'rusa', 'soto', 'anak', 'dideh/darah', 'hati', 'alabio', 
@@ -178,7 +178,7 @@ kata_kunci_dihapus = [
     'pisang', 'pindang', 'daleman', 'keleponan', 'sapi usus', 'tumis', 'sayur', 'belimbing',
     'ketupat', 'koro', 'lamtoro', 'tahu telur', 'kuning', 'ceplok', 'dadar', 'kampung',
     'ceplok', 'asin', 'terubuk', 'bongkrek', 'gembus', 'kacang', 'makanan', 'asam', 'madura',
-    'hintalo', 'ampas', 'mie', 'lodeh'
+    'hintalo', 'ampas', 'mie', 'kelinci', 
 ]
 
 before_keyword = len(df_cleaned)

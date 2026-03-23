@@ -1,91 +1,224 @@
+/**
+ * Content-Based Filtering Algorithm - Pure Mathematical Approach
+ * Menggunakan tiga metrik jarak/similarity: Cosine Similarity, Euclidean Distance, dan Manhattan Distance
+ * 
+ * Input: Feature vectors (sudah di-preprocess dengan Min-Max Scaling untuk numerik dan One-Hot Encoding untuk kategorik)
+ * Output: Ketiga skor similarity/distance untuk perbandingan
+ */
+
 import { Ingredient } from '../App';
 
-/**
- * Content-Based Filtering Algorithm
- * Menghitung similarity antara dua bahan berdasarkan berbagai fitur
- */
-
-
-// Hitung similarity untuk nilai numerik menggunakan inverse of absolute difference
-const numericalSimilarity = (val1: number, val2: number, maxDiff: number): number => {
-  const diff = Math.abs(val1 - val2);
-  return Math.max(0, 1 - (diff / maxDiff));
-};
-
-// Hitung similarity untuk nilai kategorikal (exact match)
-const categoricalSimilarity = (val1: string, val2: string): number => {
-  return val1 === val2 ? 1 : 0;
-};
-
-// Weight untuk setiap fitur dalam perhitungan similarity
-const WEIGHTS = {
-  category: 0.20,      // Kategori bahan (20%)
-  energy: 0.15,        // Energi/KKal (15%)
-  protein: 0.15,       // Kandungan protein (15%)
-  carbs: 0.15,         // Kandungan karbohidrat (15%)
-  fat: 0.15,           // Kandungan lemak (10% + 5%)
-  texture: 0.20        // Tekstur (15% + 5%)
-};
+export interface SimilarityScores {
+  cosineSimilarity: number;      // Range: -1 to 1 (1 = identical, higher is better)
+  euclideanDistance: number;     // Range: 0 to infinity (0 = identical, lower is better)
+  manhattanDistance: number;     // Range: 0 to infinity (0 = identical, lower is better)
+}
 
 /**
- * Menghitung similarity score antara dua ingredient
- * Menggunakan weighted sum dari berbagai fitur
+ * Menghitung Cosine Similarity antara dua vektor fitur
+ * Rumus: similarity = (A · B) / (||A|| * ||B||)
  * 
- * @param ingredient1 - Bahan asli
- * @param ingredient2 - Bahan kandidat pengganti
- * @returns Similarity score antara 0-1 (1 = sangat mirip)
+ * @param vectorA - Feature vector dari bahan pertama
+ * @param vectorB - Feature vector dari bahan kedua
+ * @returns Cosine similarity score (range: -1 to 1, higher = more similar)
  */
-export const calculateSimilarity = (ingredient1: Ingredient, ingredient2: Ingredient): number => {
-  // 1. Category similarity (exact match)
-  const categorySim = categoricalSimilarity(ingredient1.category, ingredient2.category);
+export const calculateCosineSimilarity = (vectorA: number[], vectorB: number[]): number => {
+  if (vectorA.length !== vectorB.length) {
+    throw new Error('Vectors must have the same length');
+  }
   
-  // 2. Nutritional similarities (menggunakan range maksimum untuk normalisasi)
-  const energySim = numericalSimilarity(ingredient1.energy, ingredient2.energy, 500);
-  const proteinSim = numericalSimilarity(ingredient1.protein, ingredient2.protein, 30);
-  const carbsSim = numericalSimilarity(ingredient1.carbs, ingredient2.carbs, 50);
-  const fatSim = numericalSimilarity(ingredient1.fat, ingredient2.fat, 100);
+  // Dot product: A · B
+  let dotProduct = 0;
+  for (let i = 0; i < vectorA.length; i++) {
+    dotProduct += vectorA[i] * vectorB[i];
+  }
   
-  // 3. Texture similarity (exact match)
-  const textureSim = categoricalSimilarity(ingredient1.texture, ingredient2.texture);
+  // Magnitude/Norm: ||A|| dan ||B||
+  let magnitudeA = 0;
+  let magnitudeB = 0;
+  for (let i = 0; i < vectorA.length; i++) {
+    magnitudeA += vectorA[i] * vectorA[i];
+    magnitudeB += vectorB[i] * vectorB[i];
+  }
+  magnitudeA = Math.sqrt(magnitudeA);
+  magnitudeB = Math.sqrt(magnitudeB);
   
-  // 4. Weighted sum of all similarities
-  const totalSimilarity = 
-    (categorySim * WEIGHTS.category) +
-    (energySim * WEIGHTS.energy) +
-    (proteinSim * WEIGHTS.protein) +
-    (carbsSim * WEIGHTS.carbs) +
-    (fatSim * WEIGHTS.fat) +
-    (textureSim * WEIGHTS.texture);
+  // Avoid division by zero
+  if (magnitudeA === 0 || magnitudeB === 0) {
+    return 0;
+  }
   
-  return totalSimilarity;
+  return dotProduct / (magnitudeA * magnitudeB);
 };
 
 /**
- * Mendapatkan top N recommendations untuk sebuah ingredient
+ * Menghitung Euclidean Distance antara dua vektor fitur
+ * Rumus: distance = sqrt(Σ(A[i] - B[i])²)
  * 
- * @param targetIngredient - Bahan yang ingin dicari penggantinya
- * @param candidates - Array kandidat bahan pengganti
+ * @param vectorA - Feature vector dari bahan pertama
+ * @param vectorB - Feature vector dari bahan kedua
+ * @returns Euclidean distance (range: 0 to infinity, lower = more similar)
+ */
+export const calculateEuclideanDistance = (vectorA: number[], vectorB: number[]): number => {
+  if (vectorA.length !== vectorB.length) {
+    throw new Error('Vectors must have the same length');
+  }
+  
+  let sumSquaredDiff = 0;
+  for (let i = 0; i < vectorA.length; i++) {
+    const diff = vectorA[i] - vectorB[i];
+    sumSquaredDiff += diff * diff;
+  }
+  
+  return Math.sqrt(sumSquaredDiff);
+};
+
+/**
+ * Menghitung Manhattan Distance antara dua vektor fitur
+ * Rumus: distance = Σ|A[i] - B[i]|
+ * 
+ * @param vectorA - Feature vector dari bahan pertama
+ * @param vectorB - Feature vector dari bahan kedua
+ * @returns Manhattan distance (range: 0 to infinity, lower = more similar)
+ */
+export const calculateManhattanDistance = (vectorA: number[], vectorB: number[]): number => {
+  if (vectorA.length !== vectorB.length) {
+    throw new Error('Vectors must have the same length');
+  }
+  
+  let sumAbsDiff = 0;
+  for (let i = 0; i < vectorA.length; i++) {
+    sumAbsDiff += Math.abs(vectorA[i] - vectorB[i]);
+  }
+  
+  return sumAbsDiff;
+};
+
+/**
+ * Menghitung ketiga skor similarity sekaligus untuk membandingkan hasil rekomendasi
+ * 
+ * @param queryVector - Feature vector dari bahan acuan (query)
+ * @param targetVector - Feature vector dari bahan target
+ * @returns Object berisi ketiga metrik scoring
+ */
+export const calculateAllSimilarityMetrics = (
+  queryVector: number[],
+  targetVector: number[]
+): SimilarityScores => {
+  return {
+    cosineSimilarity: calculateCosineSimilarity(queryVector, targetVector),
+    euclideanDistance: calculateEuclideanDistance(queryVector, targetVector),
+    manhattanDistance: calculateManhattanDistance(queryVector, targetVector)
+  };
+};
+
+/**
+ * Mendapatkan top N recommendations berdasarkan metrik tertentu
+ * 
+ * @param queryVector - Feature vector dari bahan yang dicari penggantinya
+ * @param candidates - Array of {id, vector} untuk bahan kandidat
+ * @param metric - Metrik yang digunakan: 'cosine' | 'euclidean' | 'manhattan'
  * @param topN - Jumlah rekomendasi yang diinginkan
- * @returns Array of top N similar ingredients dengan similarity scores
+ * @returns Array of top N candidates dengan semua tiga skor
  */
-export const getTopRecommendations = (
-  targetIngredient: Ingredient,
-  candidates: Ingredient[],
+export const getTopRecommendationsByMetric = (
+  queryVector: number[],
+  candidates: Array<{ id: string; vector: number[] }>,
+  metric: 'cosine' | 'euclidean' | 'manhattan' = 'cosine',
   topN: number = 5
-): Array<{ ingredient: Ingredient; similarity: number }> => {
-  // Filter out the target ingredient itself
-  const filteredCandidates = candidates.filter(
-    candidate => candidate.id !== targetIngredient.id
-  );
-  
-  // Calculate similarity for each candidate
-  const scoredCandidates = filteredCandidates.map(candidate => ({
-    ingredient: candidate,
-    similarity: calculateSimilarity(targetIngredient, candidate)
+): Array<{ id: string; scores: SimilarityScores }> => {
+  // Calculate all metrics for each candidate
+  const scoredCandidates = candidates.map(candidate => ({
+    id: candidate.id,
+    scores: calculateAllSimilarityMetrics(queryVector, candidate.vector)
   }));
   
-  // Sort by similarity (descending) and return top N
-  return scoredCandidates
-    .sort((a, b) => b.similarity - a.similarity)
-    .slice(0, topN);
+  // Sort berdasarkan metrik yang dipilih
+  const sorted = scoredCandidates.sort((a, b) => {
+    switch (metric) {
+      case 'cosine':
+        // Cosine: higher is better, sort descending
+        return b.scores.cosineSimilarity - a.scores.cosineSimilarity;
+      case 'euclidean':
+      case 'manhattan':
+        // Distance: lower is better, sort ascending
+        return (metric === 'euclidean' 
+          ? a.scores.euclideanDistance - b.scores.euclideanDistance
+          : a.scores.manhattanDistance - b.scores.manhattanDistance);
+      default:
+        return 0;
+    }
+  });
+  
+  return sorted.slice(0, topN);
+};
+
+/**
+ * ============================================================================
+ * BACKWARD COMPATIBILITY LAYER - untuk integrasi dengan existing code
+ * ============================================================================
+ */
+
+/**
+ * Konversi Ingredient object menjadi feature vector
+ * Struktur vektor: [energy, protein, carbs, fat, category_encoded..., texture_encoded...]
+ * 
+ * @param ingredient - Ingredient object
+ * @returns Feature vector (number array)
+ */
+const ingredientToVector = (ingredient: Ingredient): number[] => {
+  // Nutritional values (sudah di-normalize/scaled)
+  const nutritionFeatures = [
+    ingredient.energy,
+    ingredient.protein,
+    ingredient.carbs,
+    ingredient.fat
+  ];
+
+  // Category One-Hot Encoding (kategori umum dalam masakan Indonesia)
+  const categories = ['lauk', 'sayuran', 'rempah', 'tepung', 'cair'];
+  const categoryEncoding = categories.map(cat => (ingredient.category === cat ? 1 : 0));
+
+  // Texture One-Hot Encoding
+  const textures = ['padat', 'cair', 'bubuk', 'biji'];
+  const textureEncoding = textures.map(tex => (ingredient.texture === tex ? 1 : 0));
+
+  // Gabungkan semua features
+  return [...nutritionFeatures, ...categoryEncoding, ...textureEncoding];
+};
+
+/**
+ * Backward compatibility function - hitung similarity dengan metrik cosine (default)
+ * Menerima Ingredient objects seperti API lama
+ * 
+ * @param ingredient1 - Bahan pertama (Ingredient object)
+ * @param ingredient2 - Bahan kedua (Ingredient object)
+ * @param metric - Metrik yang digunakan: 'cosine' | 'euclidean' | 'manhattan'
+ * @returns Normalized similarity score (0-1, higher = more similar)
+ */
+export const calculateSimilarity = (
+  ingredient1: Ingredient,
+  ingredient2: Ingredient,
+  metric: 'cosine' | 'euclidean' | 'manhattan' = 'cosine'
+): number => {
+  const vector1 = ingredientToVector(ingredient1);
+  const vector2 = ingredientToVector(ingredient2);
+  const scores = calculateAllSimilarityMetrics(vector1, vector2);
+
+  switch (metric) {
+    case 'cosine':
+      // Normalize cosine similarity from [-1,1] to [0,1]
+      return (scores.cosineSimilarity + 1) / 2;
+    case 'euclidean':
+      // Normalize euclidean distance: lower distance = higher similarity
+      // Max possible distance (rough estimate based on feature range)
+      const maxDistance = Math.sqrt(4 + 5 + 4); // Sum of max squared differences
+      return Math.max(0, 1 - (scores.euclideanDistance / maxDistance));
+    case 'manhattan':
+      // Normalize manhattan distance: lower distance = higher similarity
+      const maxManhattan = 4 + 5 + 4; // Sum of max differences
+      return Math.max(0, 1 - (scores.manhattanDistance / maxManhattan));
+    default:
+      return 0;
+  }
 };

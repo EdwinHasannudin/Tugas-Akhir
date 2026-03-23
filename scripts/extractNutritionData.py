@@ -36,7 +36,9 @@ BLACKLIST_KEYWORDS = [
     'masakan', 'mentah', 'bubuk', 'tepung', 'bagian putih', 'kedelai',
     'prey', 'pelecing', 'mostarda', 'lokio', 'besar', 'galah', 'karet', 
     'ambon', 'ampenan', 'kopang', 'pecai', 'taiwan', 'tanah', 'bagian kuning',
-    'pipil', 'muda', 'giling',
+    'pipil', 'muda', 'giling', 'bandeng', 'banjar', 'baronang', 'cakalang', 
+    'bawal', 'gabus', 'kakap', 'kembung', 'layang', 'mas', 'mujair', 'patin', 
+    'sarden', 'teri', 'tongkol', 'kembang', 'moon', 'babat', 
 ]
 
 # 2. CONDITIONAL_RULES: Kata kunci yang HANYA boleh masuk jika diikuti kata tertentu.
@@ -47,7 +49,6 @@ CONDITIONAL_RULES = {
     'jagung': ['jagung kuning'], 
     'jamur': ['kuping', 'tiram'],
     'tomat': ['merah'], 
-    'ikan': ['bandeng', 'tongkol', 'kembung'],
 }
 
 # 3. WHITELIST_OVERRIDE: Nama PERSIS yang SELALU dimasukkan meskipun terkena blacklist.
@@ -336,7 +337,6 @@ def extract_nutrition_data(excel_path='nutrition/dataset/nutrition_pipeline.xlsx
     print(f"\nData siap digunakan di React:")
     print(f"  Import dari: src/data/ingredientsData.ts")
     print(f"  Jumlah bahan: {len(ingredients)}")
-    print(f"  Caranya: import {{ ingredientsDatabase }} from './data/ingredientsData'")
     
     return True
 

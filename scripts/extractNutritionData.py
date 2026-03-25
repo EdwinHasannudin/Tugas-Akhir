@@ -38,7 +38,7 @@ BLACKLIST_KEYWORDS = [
     'ambon', 'ampenan', 'kopang', 'pecai', 'taiwan', 'tanah', 'bagian kuning',
     'pipil', 'muda', 'giling', 'bandeng', 'banjar', 'baronang', 'cakalang', 
     'bawal', 'gabus', 'kakap', 'kembung', 'layang', 'mas', 'mujair', 'patin', 
-    'sarden', 'teri', 'tongkol', 'kembang', 'moon', 'babat', 
+    'sarden', 'teri', 'tongkol', 'kembang', 'moon', 'babat', 'ekor', 'labu kuning', 
 ]
 
 # 2. CONDITIONAL_RULES: Kata kunci yang HANYA boleh masuk jika diikuti kata tertentu.
@@ -46,7 +46,7 @@ BLACKLIST_KEYWORDS = [
 #    Contoh: 'daun' hanya boleh jika ada 'bawang', 'singkong', 'katuk', atau 'bayam'
 CONDITIONAL_RULES = {
     'daun': ['bawang', 'singkong', 'katuk', 'bayam', 'pepaya', 'kelor'],  
-    'jagung': ['jagung kuning'], 
+    'jagung': ['kuning'], 
     'jamur': ['kuping', 'tiram'],
     'tomat': ['merah'], 
 }
@@ -55,6 +55,7 @@ CONDITIONAL_RULES = {
 #    Gunakan nama lowercase (SEBELUM strip_words diterapkan).
 #    Kalau nama bahan cocok persis, dia pasti masuk.
 WHITELIST_OVERRIDE = [
+    'kool kembang', 
     # Contoh: 'telur ayam rebus' -> meskipun ada 'rebus' di blacklist, tetap masuk
     # 'telur ayam rebus',
 ]

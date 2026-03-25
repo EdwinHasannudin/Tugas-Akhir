@@ -176,9 +176,9 @@ kata_kunci_dihapus = [
     'mayong', 'oci', 'pepetek', 'sale', 'saluang', 'selar', 'sepat', 'sidat', 'sunu',
     'tahuman', 'tarmon', 'tembang', 'tempahas', 'terbang', 'titang', 'turi', 'peda', 'petis',
     'pisang', 'pindang', 'daleman', 'keleponan', 'sapi usus', 'tumis', 'sayur', 'belimbing',
-    'ketupat', 'koro', 'lamtoro', 'tahu telur', 'kuning', 'ceplok', 'dadar', 'kampung',
+    'ketupat', 'koro', 'lamtoro', 'tahu telur',  'ceplok', 'dadar', 'kampung', 'usus', 'liver',
     'ceplok', 'asin', 'terubuk', 'bongkrek', 'gembus', 'kacang', 'makanan', 'asam', 'madura',
-    'hintalo', 'ampas', 'mie', 'kelinci', 'usus', 'liver',
+    'hintalo', 'ampas', 'mie', 'kelinci', 
 ]
 
 before_keyword = len(df_cleaned)

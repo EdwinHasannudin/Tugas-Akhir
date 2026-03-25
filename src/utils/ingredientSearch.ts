@@ -36,6 +36,15 @@ const COOKING_TERMS = new Set([
 ]);
 
 // ============================================================
+// Compound keyword aliases — multi-word phrases yang harus
+// di-match secara utuh SEBELUM single-word alias
+// ============================================================
+const COMPOUND_KEYWORD_ALIASES: Record<string, string[]> = {
+  'telur ayam':   ['Telur Ayam'],
+  'telur bebek':  ['Telur bebek tambak'],
+};
+
+// ============================================================
 // Mapping keyword pendek → nama ingredient di database
 // ============================================================
 const KEYWORD_ALIASES: Record<string, string[]> = {
@@ -219,20 +228,19 @@ export const detectIngredientFromDish = (dishName: string): Ingredient | null =>
   for (let i = 0; i < wordsToUse.length - 1; i++) {
     const combo = wordsToUse[i] + ' ' + wordsToUse[i + 1];
     
-    // Cek alias 2-word
-    for (const [keyword, names] of Object.entries(KEYWORD_ALIASES)) {
-      if (combo.includes(keyword)) {
-        for (const n of names) {
-          const found = findIngredientByName(n);
-          if (found) twoWordMatches.push(found);
-        }
+    // 1a. Cek compound aliases (exact match) — prioritas tertinggi
+    const compoundNames = COMPOUND_KEYWORD_ALIASES[combo];
+    if (compoundNames) {
+      for (const n of compoundNames) {
+        const found = findIngredientByName(n);
+        if (found) return found; // langsung return, ini match paling spesifik
       }
     }
 
-    // Cek langsung di database
+    // 1b. Cek langsung di database (exact / startsWith)
     for (const ing of ingredientsDatabase) {
       const ingLower = ing.name.toLowerCase();
-      if (ingLower === combo || ingLower.startsWith(combo) || combo.includes(ingLower)) {
+      if (ingLower === combo || ingLower.startsWith(combo)) {
         twoWordMatches.push(ing);
       }
     }

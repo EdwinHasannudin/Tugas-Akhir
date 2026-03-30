@@ -86,13 +86,17 @@ def manhattan_dist(v1, v2):
 # ====================================================================
 def calc_mae(v_actual, v_predicted):
     """Mean Absolute Error (seberapa meleset nilai fitur rekomendasi secara numerik)"""
-    n = len(v_actual)
-    return sum(abs(a - b) for a, b in zip(v_actual, v_predicted)) / n
+    v_a = v_actual[:4]
+    v_p = v_predicted[:4]
+    n = len(v_a)
+    return sum(abs(a - b) for a, b in zip(v_a, v_p)) / n
 
 def calc_rmse(v_actual, v_predicted):
     """Root Mean Squared Error (seberapa meleset nilai fitur rekomendasi, penalize lebih pada perbedaan fitur yang besar)"""
-    n = len(v_actual)
-    return math.sqrt(sum((a - b)**2 for a, b in zip(v_actual, v_predicted)) / n)
+    v_a = v_actual[:4]
+    v_p = v_predicted[:4]
+    n = len(v_a)
+    return math.sqrt(sum((a - b)**2 for a, b in zip(v_a, v_p)) / n)
 
 def main():
     print("=" * 60)
@@ -202,49 +206,106 @@ def main():
     print(f"   RATA-RATA SISTEM MANHATTAN => MAE: {avg_mae_man:.5f} | RMSE: {avg_rmse_man:.5f}")
 
     # ====================================================================
-    # VISUALISASI MATPLOTLIB
+    # VISUALISASI MATPLOTLIB (3 GRAPH)
     # ====================================================================
-    print("\n[INFO] Mempersiapkan grafik perbandingan MAE & RMSE...")
-    
-    labels = ['Cosine Similarity', 'Euclidean Distance', 'Manhattan Distance']
-    mae_means = [avg_mae_cos, avg_mae_euc, avg_mae_man]
-    rmse_means = [avg_rmse_cos, avg_rmse_euc, avg_rmse_man]
-    
-    x = np.arange(len(labels))
-    width = 0.35
-    
-    fig, ax = plt.subplots(figsize=(10, 6))
-    fig.canvas.manager.set_window_title('Evaluation Analysis - MAE & RMSE')
-    
-    rects1 = ax.bar(x - width/2, mae_means, width, label='MAE (Mean Absolute Error)', color='#ff9999', edgecolor='black')
-    rects2 = ax.bar(x + width/2, rmse_means, width, label='RMSE (Root Mean Square Error)', color='#66b3ff', edgecolor='black')
-    
-    ax.set_ylabel('Error Value (Lebih kecil/rendah = Lebih baik)')
-    ax.set_title(f"Perbandingan Metrik Evaluasi MAE & RMSE\n(Agregasi Top-{top_k} Bahan Pengganti '{query_ing['name']}')", pad=15, fontweight='bold')
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels, fontweight='bold')
-    
-    # Memindahkan legend (keterangan) ke luar grafik agar tidak menutupi isi bar
-    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, shadow=True, ncol=2)
-    
-    # Tambah angka di atas bar
-    def autolabel(rects):
-        for rect in rects:
-            height = rect.get_height()
-            ax.annotate(f"{height:.4f}",
-                        xy=(rect.get_x() + rect.get_width() / 2, height),
-                        xytext=(0, 3),  
-                        textcoords="offset points",
-                        ha='center', va='bottom', fontsize=9)
-                        
-    autolabel(rects1)
-    autolabel(rects2)
-    
-    ax.grid(axis='y', linestyle='--', alpha=0.6)
-    ax.set_axisbelow(True)
-    
-    fig.tight_layout()
-    print("       (Silakan cek jendela Matplotlib yang terbuka untuk melihat grafik)")
+    print("\n[INFO] Mempersiapkan 3 grafik visualisasi Matplotlib...")
+
+    def plot_algorithm_performance(top_k_results, title, metric_key, metric_name, avg_mae, avg_rmse):
+        labels = [item['name'][:15] for item in top_k_results]
+        mae_scores = [item['mae_score'] for item in top_k_results]
+        rmse_scores = [item['rmse_score'] for item in top_k_results]
+        metric_scores = [item[metric_key] for item in top_k_results]
+        
+        x = np.arange(len(labels))
+        width = 0.25
+        
+        fig, ax1 = plt.subplots(figsize=(12, 7))
+        fig.canvas.manager.set_window_title(f"Performance Analysis - {title}")
+        
+        rects1 = ax1.bar(x - width, mae_scores, width, label='MAE', color='#ff9999', edgecolor='black')
+        rects2 = ax1.bar(x, rmse_scores, width, label='RMSE', color='#66b3ff', edgecolor='black')
+        
+        ax2 = ax1.twinx()
+        rects3 = ax2.bar(x + width, metric_scores, width, label=metric_name, color='#99ff99', edgecolor='black')
+        
+        ax1.set_ylabel('Error Value (MAE & RMSE)', color='black', fontsize=11)
+        ax2.set_ylabel(f'{metric_name} Score', color='green', fontsize=11)
+        
+        ax1.set_title(f"Performa Top-{top_k}: {title}\n(Bahan: '{query_ing['name']}')", pad=20, fontweight='bold', fontsize=14)
+        ax1.set_xticks(x)
+        ax1.set_xticklabels(labels, fontweight='bold', rotation=15, ha='right', fontsize=11)
+        
+        lines1, labels1 = ax1.get_legend_handles_labels()
+        lines2, labels2 = ax2.get_legend_handles_labels()
+        ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper center', bbox_to_anchor=(0.5, -0.15), fancybox=True, shadow=True, ncol=3, fontsize=11)
+        
+        def autolabel(ax, rects):
+            for rect in rects:
+                height = rect.get_height()
+                ax.annotate(f"{height:.4f}", xy=(rect.get_x() + rect.get_width() / 2, height),
+                            xytext=(0, 3), textcoords="offset points", ha='center', va='bottom', fontsize=8)
+                            
+        autolabel(ax1, rects1)
+        autolabel(ax1, rects2)
+        autolabel(ax2, rects3)
+        
+        avg_text = f"Rata-rata MAE: {avg_mae:.5f}\nRata-rata RMSE: {avg_rmse:.5f}"
+        ax1.text(1.0, -0.20, avg_text, transform=ax1.transAxes, fontsize=10, fontweight='bold',
+                 verticalalignment='top', horizontalalignment='right',
+                 bbox=dict(boxstyle='round,pad=0.5', facecolor='#F8F9FA', edgecolor='#DEE2E6', alpha=0.9))
+        
+        ax1.grid(axis='y', linestyle='--', alpha=0.6)
+        fig.tight_layout()
+
+    def plot_summary_comparison(avg_scores):
+        methods = ['Cosine', 'Euclidean', 'Manhattan']
+        mae_avgs = [avg_scores['cos'][0], avg_scores['euc'][0], avg_scores['man'][0]]
+        rmse_avgs = [avg_scores['cos'][1], avg_scores['euc'][1], avg_scores['man'][1]]
+        
+        x = np.arange(len(methods))
+        width = 0.35
+        
+        fig, ax = plt.subplots(figsize=(10, 6))
+        fig.canvas.manager.set_window_title("Comparison of Average Performance")
+        
+        rects1 = ax.bar(x - width/2, mae_avgs, width, label='Avg MAE', color='#ff9999', edgecolor='black')
+        rects2 = ax.bar(x + width/2, rmse_avgs, width, label='Avg RMSE', color='#66b3ff', edgecolor='black')
+        
+        ax.set_ylabel('Average Error Value')
+        ax.set_title(f"Perbandingan Rata-rata Error antar Metode\n(Query: '{query_ing['name']}')", pad=20, fontweight='bold')
+        ax.set_xticks(x)
+        ax.set_xticklabels(methods, fontweight='bold')
+        ax.legend()
+        
+        def autolabel(rects):
+            for rect in rects:
+                height = rect.get_height()
+                ax.annotate(f"{height:.5f}",
+                            xy=(rect.get_x() + rect.get_width() / 2, height),
+                            xytext=(0, 3),
+                            textcoords="offset points",
+                            ha='center', va='bottom', fontsize=9, fontweight='bold')
+        
+        autolabel(rects1)
+        autolabel(rects2)
+        
+        ax.grid(axis='y', linestyle='--', alpha=0.6)
+        fig.tight_layout()
+
+    # Data untuk grafik perbandingan rata-rata
+    avg_data = {
+        'cos': (avg_mae_cos, avg_rmse_cos),
+        'euc': (avg_mae_euc, avg_rmse_euc),
+        'man': (avg_mae_man, avg_rmse_man)
+    }
+
+    plot_algorithm_performance(top_k_cosine, 'Cosine Similarity', 'cosine', 'Cosine Score', avg_mae_cos, avg_rmse_cos)
+    plot_algorithm_performance(top_k_eucl, 'Euclidean Distance', 'euclidean', 'Euclidean Dist', avg_mae_euc, avg_rmse_euc)
+    plot_algorithm_performance(top_k_man, 'Manhattan Distance', 'manhattan', 'Manhattan Dist', avg_mae_man, avg_rmse_man)
+    plot_summary_comparison(avg_data)
+
+    print("       (Silakan cek 4 jendela Matplotlib yang terbuka untuk melihat grafik)")
+    print("       (Tutup SEMUA jendela grafik/plot untuk mengakhiri program)")
     plt.show()
 
 if __name__ == "__main__":

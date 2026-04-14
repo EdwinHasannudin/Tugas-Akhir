@@ -5,12 +5,6 @@ import { Ingredient } from '../App';
  * Menghitung similarity antara dua bahan berdasarkan berbagai fitur
  */
 
-// Normalisasi nilai numerik ke range 0-1
-const normalize = (value: number, min: number, max: number): number => {
-  if (max === min) return 0;
-  return (value - min) / (max - min);
-};
-
 // Hitung similarity untuk nilai numerik menggunakan inverse of absolute difference
 const numericalSimilarity = (val1: number, val2: number, maxDiff: number): number => {
   const diff = Math.abs(val1 - val2);
@@ -29,9 +23,7 @@ const WEIGHTS = {
   protein: 0.15,       // Kandungan protein (15%)
   carbs: 0.15,         // Kandungan karbohidrat (15%)
   fat: 0.10,           // Kandungan lemak (10%)
-  fiber: 0.05,         // Kandungan serat (5%)
-  texture: 0.15,       // Tekstur (15%)
-  flavor: 0.05         // Rasa (5%)
+  texture: 0.25        // Tekstur (25%)
 };
 
 /**
@@ -51,38 +43,34 @@ export const calculateSimilarity = (ingredient1: Ingredient, ingredient2: Ingred
   const proteinSim = numericalSimilarity(ingredient1.protein, ingredient2.protein, 30);
   const carbsSim = numericalSimilarity(ingredient1.carbs, ingredient2.carbs, 50);
   const fatSim = numericalSimilarity(ingredient1.fat, ingredient2.fat, 100);
-  const fiberSim = numericalSimilarity(ingredient1.fiber, ingredient2.fiber, 10);
   
   // 3. Texture similarity (exact match)
   const textureSim = categoricalSimilarity(ingredient1.texture, ingredient2.texture);
   
-  // 4. Flavor similarity (exact match)
-  const flavorSim = categoricalSimilarity(ingredient1.flavor, ingredient2.flavor);
-  
-  // 5. Weighted sum of all similarities
+  // 4. Weighted sum of all similarities
   const totalSimilarity = 
     (categorySim * WEIGHTS.category) +
     (energySim * WEIGHTS.energy) +
     (proteinSim * WEIGHTS.protein) +
     (carbsSim * WEIGHTS.carbs) +
     (fatSim * WEIGHTS.fat) +
-    (fiberSim * WEIGHTS.fiber) +
-    (textureSim * WEIGHTS.texture) +
-    (flavorSim * WEIGHTS.flavor);
+    (textureSim * WEIGHTS.texture);
   
   return totalSimilarity;
 };
 
 /**
- * Build feature vector from ingredient (normalized numerics + one-hot categoricals)
+ * Build feature vector from ingredient (raw scaled numerics + one-hot categoricals)
+ * Menggunakan raw values dengan scaling yang sesuai untuk better cosine similarity distribution
  */
 const buildFeatureVector = (ing: Ingredient, allIngredients: Ingredient[]): number[] => {
-  // Numeric features with max ranges for normalization
-  const numericNorm = [
-    ing.energy / 900,
-    ing.protein / 35,
-    ing.fat / 100,
-    ing.carbs / 50,
+  // Numeric features dengan scaling yang lebih baik untuk distribusi cosine similarity
+  // Raw values dengan multiplier untuk memberi weight lebih pada nutrisi numerik
+  const numericScaled = [
+    ing.energy * 2,      // Scale energy 2x 
+    ing.protein * 3,     // Scale protein 3x (lebih penting untuk rekomendasi)
+    ing.fat * 2,         // Scale fat 2x
+    ing.carbs * 2        // Scale carbs 2x
   ];
 
   // One-hot for texture
@@ -93,7 +81,7 @@ const buildFeatureVector = (ing: Ingredient, allIngredients: Ingredient[]): numb
   const categories = [...new Set(allIngredients.map(i => i.category))].sort();
   const categoryVec = categories.map(c => c === ing.category ? 1 : 0);
 
-  return [...numericNorm, ...textureVec, ...categoryVec];
+  return [...numericScaled, ...textureVec, ...categoryVec];
 };
 
 /** Euclidean Distance Similarity: 1 / (1 + dist) */

@@ -122,104 +122,20 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
     }
   };
 
-  // Get relevant ingredients for tables (detected + top 5 recs)
-  const relevantIngredients = detectedIngredient
-    ? [detectedIngredient, ...recommendations.map(r => r.ingredient)]
-    : [];
-
-  // Helper: Find nutrition data dari Excel dataset by name (fuzzy match)
-  const findNutritionRawData = (ingredientName: string): NutritionData | undefined => {
-    const nameLower = ingredientName.toLowerCase().trim();
-    return (nutritionRawData as NutritionData[]).find(item => {
-      const itemNameLower = item.name.toLowerCase().trim();
-      // Exact match
-      if (itemNameLower === nameLower) return true;
-      // Partial match - check jika salah satu contain yang lain
-      return itemNameLower.includes(nameLower) || nameLower.includes(itemNameLower);
-    });
-  };
-
-  const findNutritionScaledData = (ingredientName: string): NutritionData | undefined => {
-    const nameLower = ingredientName.toLowerCase().trim();
-    return (nutritionScaledData as NutritionData[]).find(item => {
-      const itemNameLower = item.name.toLowerCase().trim();
-      if (itemNameLower === nameLower) return true;
-      return itemNameLower.includes(nameLower) || nameLower.includes(itemNameLower);
-    });
-  };
-
-  // Prepare data tables:
-  // - Display di tabel Min-Max Scaling: gunakan nutrition_raw_dataset.json (di-match dengan recommendations)
-  // - Display di tabel Rekomendasi Final (Step 3): gunakan ingredientsDatabase (punya texture lengkap)
-  const rawDataForDisplay: DisplayData[] = [];
-  const scaledDataForDisplay: DisplayData[] = [];
+  // Prepare data tables FIRST:
+  // Tampilkan SEMUA data dari Excel JSON files tanpa filter (all data in dataset)
+  const rawDataForDisplay: DisplayData[] = (nutritionRawData as NutritionData[]).map(item => ({
+    ...item,
+    source: 'excel'
+  } as DisplayData));
+  
+  const scaledDataForDisplay: DisplayData[] = (nutritionScaledData as NutritionData[]).map(item => ({
+    ...item,
+    source: 'excel'
+  } as DisplayData));
 
   if (detectedIngredient) {
-    // Detected ingredient - cari di Excel data
-    const rawNutrition = findNutritionRawData(detectedIngredient.name);
-    const scaledNutrition = findNutritionScaledData(detectedIngredient.name);
-
-    if (rawNutrition && scaledNutrition) {
-      // Found in Excel - display dengan indicator "dari Excel"
-      rawDataForDisplay.push({ ...rawNutrition, source: 'excel' });
-      scaledDataForDisplay.push({ ...scaledNutrition, source: 'excel' });
-    } else {
-      // Fallback ke ingredientsDatabase (tidak ketemu di Excel)
-      rawDataForDisplay.push({
-        id: detectedIngredient.id,
-        name: detectedIngredient.name,
-        energy: detectedIngredient.energy,
-        protein: detectedIngredient.protein,
-        fat: detectedIngredient.fat,
-        carbs: detectedIngredient.carbs,
-        category: detectedIngredient.category,
-        source: 'database',
-      } as DisplayData);
-      scaledDataForDisplay.push({
-        id: detectedIngredient.id,
-        name: detectedIngredient.name,
-        energy: detectedIngredient.energy,
-        protein: detectedIngredient.protein,
-        fat: detectedIngredient.fat,
-        carbs: detectedIngredient.carbs,
-        category: detectedIngredient.category,
-        source: 'database',
-      } as DisplayData);
-    }
-
-    // Recommendations - cari di Excel data dan match dengan recommendations dari ingredientsDatabase
-    for (const rec of recommendations) {
-      const rawNutrition = findNutritionRawData(rec.ingredient.name);
-      const scaledNutrition = findNutritionScaledData(rec.ingredient.name);
-
-      if (rawNutrition && scaledNutrition) {
-        // Found in Excel
-        rawDataForDisplay.push({ ...rawNutrition, source: 'excel' });
-        scaledDataForDisplay.push({ ...scaledNutrition, source: 'excel' });
-      } else {
-        // Fallback ke ingredientsDatabase
-        rawDataForDisplay.push({
-          id: rec.ingredient.id,
-          name: rec.ingredient.name,
-          energy: rec.ingredient.energy,
-          protein: rec.ingredient.protein,
-          fat: rec.ingredient.fat,
-          carbs: rec.ingredient.carbs,
-          category: rec.ingredient.category,
-          source: 'database',
-        } as DisplayData);
-        scaledDataForDisplay.push({
-          id: rec.ingredient.id,
-          name: rec.ingredient.name,
-          energy: rec.ingredient.energy,
-          protein: rec.ingredient.protein,
-          fat: rec.ingredient.fat,
-          carbs: rec.ingredient.carbs,
-          category: rec.ingredient.category,
-          source: 'database',
-        } as DisplayData);
-      }
-    }
+    // HANYA untuk highlight detected ingredient di UI, tapi tetap tampilkan semua data
   }
 
   // Compute min/max from displayed data untuk normalisasi
@@ -244,7 +160,12 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
 
   const { mins, maxs } = getMinMaxValues(rawDataForDisplay);
 
-  // For encoded data (One-Hot), always use ingredientsDatabase (punya texture lengkap)
+  // Get relevant ingredients for One-Hot Encoding (detected + top 5 recs)
+  const relevantIngredients = detectedIngredient
+    ? [detectedIngredient, ...recommendations.map(r => r.ingredient)]
+    : [];
+
+  // For encoded data (One-Hot), gunakan relevantIngredients (detected + top 5 recs)
   const { encoded, textures, categories } = oneHotEncode(relevantIngredients);
 
   const steps = [
@@ -382,11 +303,11 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
                   </p>
 
                   {/* Original data */}
-                  <p className="text-xs text-gray-500 mb-2" style={{ fontWeight: 600 }}>Data Asli (dari Nutrition Dataset / ingredientsData.ts)</p>
-                  <div className="overflow-x-auto mb-5">
+                  <p className="text-xs text-gray-500 mb-2" style={{ fontWeight: 600 }}>Data Asli dari Nutrition Dataset</p>
+                  <div className="overflow-x-auto mb-5" style={{ maxHeight: '250px', overflowY: 'auto' }}>
                     <table className="w-full text-xs border-collapse">
-                      <thead>
-                        <tr className="bg-gray-50">
+                      <thead className="sticky top-0 bg-gray-50">
+                        <tr>
                           <th className="text-left text-gray-500 px-3 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Bahan</th>
                           <th className="text-center text-gray-500 px-2 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Sumber</th>
                           <th className="text-right text-gray-500 px-3 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Energi (KKal)</th>
@@ -396,10 +317,10 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
                         </tr>
                       </thead>
                       <tbody>
-                        {rawDataForDisplay.map((ing, i) => (
-                          <tr key={ing.id} className={i === 0 ? 'bg-blue-50' : ''}>
-                            <td className="px-3 py-2 border border-gray-200 text-gray-800" style={{ fontWeight: i === 0 ? 600 : 400 }}>
-                              {ing.name} {i === 0 && <span className="text-blue-600 text-[10px]">(target)</span>}
+                        {rawDataForDisplay.map((ing) => (
+                          <tr key={ing.id}>
+                            <td className="px-3 py-2 border border-gray-200 text-gray-800">
+                              {ing.name}
                             </td>
                             <td className="px-2 py-2 border border-gray-200 text-center">
                               <span className={`text-[10px] font-600 px-2 py-1 rounded ${
@@ -449,10 +370,10 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
 
                   {/* Scaled data */}
                   <p className="text-xs text-gray-500 mb-2" style={{ fontWeight: 600 }}>Hasil Normalisasi (0–1) dari nutrition_scaled_dataset.json</p>
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto mb-5" style={{ maxHeight: '250px', overflowY: 'auto' }}>
                     <table className="w-full text-xs border-collapse">
-                      <thead>
-                        <tr className="bg-gray-50">
+                      <thead className="sticky top-0 bg-gray-50">
+                        <tr>
                           <th className="text-left text-gray-500 px-3 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Bahan</th>
                           <th className="text-center text-gray-500 px-2 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Sumber</th>
                           <th className="text-right text-gray-500 px-3 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Energi</th>
@@ -462,10 +383,10 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
                         </tr>
                       </thead>
                       <tbody>
-                        {(scaledDataForDisplay as Record<string, any>[]).map((row: Record<string, any>, i: number) => (
-                          <tr key={row.id} className={i === 0 ? 'bg-blue-50' : ''}>
-                            <td className="px-3 py-2 border border-gray-200 text-gray-800" style={{ fontWeight: i === 0 ? 600 : 400 }}>
-                              {row.name} {i === 0 && <span className="text-blue-600 text-[10px]">(target)</span>}
+                        {(scaledDataForDisplay as Record<string, any>[]).map((row: Record<string, any>) => (
+                          <tr key={row.id}>
+                            <td className="px-3 py-2 border border-gray-200 text-gray-800">
+                              {row.name}
                             </td>
                             <td className="px-2 py-2 border border-gray-200 text-center">
                               <span className={`text-[10px] font-600 px-2 py-1 rounded ${

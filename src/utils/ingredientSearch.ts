@@ -62,9 +62,13 @@ const KEYWORD_ALIASES: Record<string, string[]> = {
   'tahu':     ['Tahu', 'Kembang tahu', 'Moon tahu'],
   'tempe':    ['Tempe pasar'],
   'telur':    ['Telur Ayam', 'Telur bebek tambak'],
+  // Sayuran
   'bayam':    ['Bayam', 'Bayam Merah'],
   'kangkung': ['Kangkung'],
   'sawi':     ['Sawi'],
+  'kol':      ['Kool Kembang'],
+  'kol kembang': ['Kool Kembang'],
+  'kool':     ['Kool Kembang'],
   'terong':   ['Terong', 'Terong Belanda'],
   'kentang':  ['Kentang'],
   'wortel':   ['Wortel'],
@@ -72,6 +76,7 @@ const KEYWORD_ALIASES: Record<string, string[]> = {
   'tomat':    ['Tomat merah'],
   'selada':   ['Selada', 'Selada Air'],
   'lobak':    ['Lobak'],
+  'jengkol':  ['Jengkol'],
   'rebung':   ['Rebung'],
   'labu':     ['Labu Siam', 'Labu Air', 'Labu waluh'],
   'ketimun':  ['Ketimun'],
@@ -203,6 +208,21 @@ const findIngredientByName = (name: string): Ingredient | null => {
 };
 
 /**
+ * Category priority untuk detection
+ * Prioritas: lauk/protein > sayuran > bumbu
+ */
+const CATEGORY_PRIORITY: Record<string, number> = {
+  'lauk': 100,
+  'sayuran': 50,
+  'bumbu': 10,
+  'lainnya': 5,
+};
+
+const getCategoryPriority = (category: string): number => {
+  return CATEGORY_PRIORITY[category] ?? 0;
+};
+
+/**
  * Detect ingredient dari nama masakan
  * 
  * Alur:
@@ -210,7 +230,7 @@ const findIngredientByName = (name: string): Ingredient | null => {
  * 2. Buang kata-kata yang merupakan istilah masak (goreng, bakar, kare, dll)
  * 3. Coba cocokkan multi-word combo (2 kata) dulu, lalu single word
  * 4. Gunakan alias mapping untuk keyword pendek
- * 5. Prioritaskan lauk > sayuran
+ * 5. Prioritaskan lauk > sayuran > bumbu
  */
 export const detectIngredientFromDish = (dishName: string): Ingredient | null => {
   if (!dishName.trim()) return null;
@@ -247,10 +267,10 @@ export const detectIngredientFromDish = (dishName: string): Ingredient | null =>
   }
 
   if (twoWordMatches.length > 0) {
-    // Prioritas lauk
-    const lauk = twoWordMatches.find(m => m.category === 'lauk');
-    if (lauk) return lauk;
-    return twoWordMatches[0];
+    // Deduplicate dan sort by category priority
+    const uniqueMatches = Array.from(new Map(twoWordMatches.map(m => [m.id, m])).values());
+    uniqueMatches.sort((a, b) => getCategoryPriority(b.category) - getCategoryPriority(a.category));
+    return uniqueMatches[0];
   }
 
   // ---- Tahap 2: Coba cocokkan single words via alias ----
@@ -267,9 +287,10 @@ export const detectIngredientFromDish = (dishName: string): Ingredient | null =>
   }
 
   if (singleMatches.length > 0) {
-    const lauk = singleMatches.find(m => m.category === 'lauk');
-    if (lauk) return lauk;
-    return singleMatches[0];
+    // Deduplicate dan sort by category priority
+    const uniqueMatches = Array.from(new Map(singleMatches.map(m => [m.id, m])).values());
+    uniqueMatches.sort((a, b) => getCategoryPriority(b.category) - getCategoryPriority(a.category));
+    return uniqueMatches[0];
   }
 
   // ---- Tahap 3: Coba word-boundary match langsung di database ----
@@ -278,8 +299,8 @@ export const detectIngredientFromDish = (dishName: string): Ingredient | null =>
     if (word.length < 3) continue; // skip kata terlalu pendek
     for (const ing of ingredientsDatabase) {
       const ingWords = ing.name.toLowerCase().split(/\s+/);
-      // Word harus match di word boundary, bukan substring
-      const isMatch = ingWords.some(iw => iw === word || iw.startsWith(word));
+      // Word harus match di word boundary (exact atau startsWith), bukan substring
+      const isMatch = ingWords.some(iw => iw === word || (iw.startsWith(word) && word.length >= 3));
       if (isMatch) {
         directMatches.push(ing);
       }
@@ -287,9 +308,10 @@ export const detectIngredientFromDish = (dishName: string): Ingredient | null =>
   }
 
   if (directMatches.length > 0) {
-    const lauk = directMatches.find(m => m.category === 'lauk');
-    if (lauk) return lauk;
-    return directMatches[0];
+    // Deduplicate dan sort by category priority
+    const uniqueMatches = Array.from(new Map(directMatches.map(m => [m.id, m])).values());
+    uniqueMatches.sort((a, b) => getCategoryPriority(b.category) - getCategoryPriority(a.category));
+    return uniqueMatches[0];
   }
 
   return null;

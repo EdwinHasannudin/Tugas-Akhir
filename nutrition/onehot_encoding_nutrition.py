@@ -4,11 +4,23 @@ onehot_encoding_nutrition.py - STEP 2 Pipeline
 Mengklasifikasikan bahan makanan berdasarkan nama, lalu
 menerapkan One-Hot Encoding pada kolom texture & kategori.
 
-Alur:
-  1. Baca data dari sheet 'Nutrition Scaled' (output STEP 1)
-  2. Klasifikasi texture & kategori menggunakan word-boundary matching
-  3. One-Hot Encoding pada kolom texture & kategori
-  4. Simpan hasil ke sheet 'One-Hot Encoded' dalam file yang sama
+Alur Pipeline (3 STEPS):
+  STEP 1: scaling_nutrition.py
+    → Baca nutrition.csv
+    → Min-Max Scaling pada kolom nutrisi
+    → Output: sheet 'Nutrition Scaled'
+  ↓
+  STEP 2: onehot_encoding_nutrition.py (file ini)
+    → Klasifikasi texture & kategori
+    → One-Hot Encoding
+    → Output: sheet 'One-Hot Encoded'
+  ↓
+  STEP 3: pembagian.py (Merged pembersihan + pembagian)
+    → Pembersihan data (hapus lainnya, keyword, strip, deduplikasi)
+    → Pembagian per kategori (lauk, sayuran)
+    → Output: sheet 'lauk' & 'sayuran'
+
+File: nutrition_pipeline.xlsx
 """
 
 import re
@@ -477,7 +489,7 @@ if __name__ == "__main__":
         print("\n[DONE] STEP 2 SELESAI: One-Hot Encoding berhasil disimpan!")
         print(f"[FILE] File: {input_file}")
         print("\n" + "=" * 80)
-        print("NEXT STEP: Jalankan pembersihan.py")
+        print("NEXT STEP: Jalankan pembagian.py")
         print("=" * 80)
 
     except FileNotFoundError as e:

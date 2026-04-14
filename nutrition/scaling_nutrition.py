@@ -1,14 +1,26 @@
 """
 scaling_nutrition.py - STEP 1 Pipeline
 ========================================
-Membaca data nutrisi dari CSV, merancang dataset asli pada sheet terpisah,
+Membaca data nutrisi dari CSV, menyimpan dataset asli pada sheet terpisah,
 dan menerapkan Min-Max Scaling pada kolom nutrisi.
 
-Alur:
-  1. Baca data dari nutrition.csv
-  2. Simpan ke sheet 'Dataset Asli' dalam file pipeline
-  3. Terapkan Min-Max Scaling pada kolom nutrisi (calories, proteins, fat, carbohydrate)
-  4. Simpan hasil scaling ke sheet 'Nutrition Scaled' dalam file yang sama
+Alur Pipeline (3 STEPS):
+  STEP 1: scaling_nutrition.py (file ini)
+    → Baca nutrition.csv
+    → Min-Max Scaling pada kolom nutrisi
+    → Output: sheet 'Nutrition Scaled'
+  ↓
+  STEP 2: onehot_encoding_nutrition.py
+    → Klasifikasi texture & kategori
+    → One-Hot Encoding
+    → Output: sheet 'One-Hot Encoded'
+  ↓
+  STEP 3: pembagian.py (Merged pembersihan + pembagian)
+    → Pembersihan data (hapus lainnya, keyword, strip, deduplikasi)
+    → Pembagian per kategori (lauk, sayuran)
+    → Output: sheet 'lauk' & 'sayuran'
+
+File: nutrition_pipeline.xlsx
 """
 
 import pandas as pd

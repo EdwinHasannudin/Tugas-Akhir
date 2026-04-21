@@ -25,10 +25,6 @@ interface DemoSystemPageProps {
   onBack: () => void;
 }
 
-interface DisplayData extends NutritionData {
-  source?: 'excel' | 'database'; // Untuk tracking mana data-nya
-}
-
 // Note: oneHotEncode function dipindahkan ke relatedIngredients computation
 // Tabel One-Hot Encoding sekarang menggunakan data dari lauk_dataset.json dan sayuran_dataset.json
 
@@ -111,15 +107,9 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
 
   // Prepare data tables FIRST:
   // Tampilkan SEMUA data dari Excel JSON files tanpa filter (all data in dataset)
-  const rawDataForDisplay: DisplayData[] = (nutritionRawData as NutritionData[]).map(item => ({
-    ...item,
-    source: 'excel'
-  } as DisplayData));
+  const rawDataForDisplay: NutritionData[] = nutritionRawData as NutritionData[];
   
-  const scaledDataForDisplay: DisplayData[] = (nutritionScaledData as NutritionData[]).map(item => ({
-    ...item,
-    source: 'excel'
-  } as DisplayData));
+  const scaledDataForDisplay: NutritionData[] = nutritionScaledData as NutritionData[];
 
   if (detectedIngredient) {
     // HANYA untuk highlight detected ingredient di UI, tapi tetap tampilkan semua data
@@ -297,7 +287,6 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
                       <thead className="sticky top-0 bg-gray-50">
                         <tr>
                           <th className="text-left text-gray-500 px-3 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Bahan</th>
-                          <th className="text-center text-gray-500 px-2 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Sumber</th>
                           <th className="text-right text-gray-500 px-3 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Energi (KKal)</th>
                           <th className="text-right text-gray-500 px-3 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Protein (g)</th>
                           <th className="text-right text-gray-500 px-3 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Lemak (g)</th>
@@ -309,15 +298,6 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
                           <tr key={ing.id}>
                             <td className="px-3 py-2 border border-gray-200 text-gray-800">
                               {ing.name}
-                            </td>
-                            <td className="px-2 py-2 border border-gray-200 text-center">
-                              <span className={`text-[10px] font-600 px-2 py-1 rounded ${
-                                ing.source === 'excel' 
-                                  ? 'bg-green-100 text-green-700' 
-                                  : 'bg-yellow-100 text-yellow-700'
-                              }`}>
-                                {ing.source === 'excel' ? 'Excel' : 'DB'}
-                              </span>
                             </td>
                             <td className="px-3 py-2 border border-gray-200 text-right text-gray-700">
                               {typeof ing.energy === 'number' ? ing.energy.toFixed(2) : ing.energy}
@@ -363,7 +343,6 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
                       <thead className="sticky top-0 bg-gray-50">
                         <tr>
                           <th className="text-left text-gray-500 px-3 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Bahan</th>
-                          <th className="text-center text-gray-500 px-2 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Sumber</th>
                           <th className="text-right text-gray-500 px-3 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Energi</th>
                           <th className="text-right text-gray-500 px-3 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Protein</th>
                           <th className="text-right text-gray-500 px-3 py-2 border border-gray-200" style={{ fontWeight: 600 }}>Lemak</th>
@@ -375,15 +354,6 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
                           <tr key={row.id}>
                             <td className="px-3 py-2 border border-gray-200 text-gray-800">
                               {row.name}
-                            </td>
-                            <td className="px-2 py-2 border border-gray-200 text-center">
-                              <span className={`text-[10px] font-600 px-2 py-1 rounded ${
-                                row.source === 'excel' 
-                                  ? 'bg-green-100 text-green-700' 
-                                  : 'bg-yellow-100 text-yellow-700'
-                              }`}>
-                                {row.source === 'excel' ? 'Excel' : 'DB'}
-                              </span>
                             </td>
                             <td className="px-3 py-2 border border-gray-200 text-right text-gray-700 tabular-nums">
                               {typeof row.energy === 'number' ? row.energy.toFixed(4) : row.energy}
@@ -456,7 +426,7 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
                     
                     {/* Tabel One-Hot Encoding Bahan Lauk */}
                     <div className="mb-6">
-                      <p className="text-sm text-gray-700 mb-2" style={{ fontWeight: 600 }}>📌 Hasil One-Hot Encoding Bahan Lauk</p>
+                      <p className="text-sm text-gray-700 mb-2" style={{ fontWeight: 600 }}>A. Hasil One-Hot Encoding Bahan Lauk</p>
                       <p className="text-xs text-gray-400 mb-3">Fitur tekstur dan kategori diubah menjadi representasi biner (0/1)</p>
                       <div className="overflow-x-auto border border-gray-200 rounded-lg" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                         <table className="text-xs border-collapse" style={{ minWidth: '100%' }}>
@@ -550,7 +520,7 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
 
                     {/* Tabel One-Hot Encoding Bahan Sayuran */}
                     <div>
-                      <p className="text-sm text-gray-700 mb-2" style={{ fontWeight: 600 }}>🥬 Hasil One-Hot Encoding Bahan Sayuran</p>
+                      <p className="text-sm text-gray-700 mb-2" style={{ fontWeight: 600 }}>B. Hasil One-Hot Encoding Bahan Sayuran</p>
                       <p className="text-xs text-gray-400 mb-3">Fitur tekstur dan kategori diubah menjadi representasi biner (0/1)</p>
                       <div className="overflow-x-auto border border-gray-200 rounded-lg" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                         <table className="text-xs border-collapse" style={{ minWidth: '100%' }}>

@@ -36,18 +36,14 @@ BLACKLIST_KEYWORDS = [
     'masakan', 'mentah', 'bubuk', 'tepung', 'bagian putih', 'kedelai',
     'prey', 'pelecing', 'mostarda', 'lokio', 'besar', 'galah', 'karet', 
     'ambon', 'ampenan', 'kopang', 'pecai', 'taiwan', 'tanah', 'bagian kuning',
-    'pipil', 'muda', 'giling', 'bandeng', 'banjar', 'baronang', 'cakalang', 
-    'bawal', 'gabus', 'kakap', 'kembung', 'layang', 'mas', 'mujair', 'patin', 
-    'sarden', 'teri', 'tongkol', 'kembang', 'moon', 'babat', 'ekor', 'labu kuning', 
+    'pipil', 'muda', 'giling',  
 ]
 
 # 2. CONDITIONAL_RULES: Kata kunci yang HANYA boleh masuk jika diikuti kata tertentu.
 #    Format: { 'keyword': ['kata_pendamping_1', 'kata_pendamping_2', ...] }
 #    Contoh: 'daun' hanya boleh jika ada 'bawang', 'singkong', 'katuk', atau 'bayam'
-CONDITIONAL_RULES = {
-    'daun': ['bawang', 'singkong', 'katuk', 'bayam', 'pepaya', 'kelor'],  
+CONDITIONAL_RULES = {  
     'jagung': ['kuning'], 
-    'jamur': ['kuping', 'tiram'],
     'tomat': ['merah'], 
 }
 

@@ -29,12 +29,12 @@ warnings.filterwarnings('ignore')
 
 # Kata-kata yang akan DIHILANGKAN dari nama bahan di kolom 'name'.
 STRIP_WORDS = [
-    'segar',
+    'segar', 'daging', 'pasar', 'tambak',
 ]
 
 # Kata kunci untuk menghapus bahan makanan (case-insensitive)
 KEYWORDS_TO_REMOVE = [
-    'andaliman', 'pohon', 'babi', 'anjing', 'kuda', 'domba', 'burung', 'angsa', 
+    'andaliman', 'pohon', 'babi', 'anjing', 'kuda', 'burung', 'angsa', 
     'belut', 'katak', 'keong', 'kodok', 'kura-kura', 'ulat sagu', 'ham', 'hiu', 
     'kotiu', 'buaya', 'dodol', 'penyu', 'masakan', 'goreng', 'kukus', 'lodeh',
     'ginjal', 'sosis', 'lilin', 'pempek', 'kue', 'martabak', 'otak', 'ular', 
@@ -52,7 +52,17 @@ KEYWORDS_TO_REMOVE = [
     'pisang', 'pindang', 'daleman', 'keleponan', 'sapi usus', 'tumis', 'sayur', 'belimbing',
     'ketupat', 'koro', 'lamtoro', 'tahu telur',  'ceplok', 'dadar', 'kampung', 'usus', 'liver',
     'ceplok', 'asin', 'terubuk', 'bongkrek', 'gembus', 'kacang', 'makanan', 'asam', 'madura',
-    'hintalo', 'ampas', 'mie', 'kelinci', 
+    'hintalo', 'ampas', 'mie', 'kelinci', 'rebon', 'babat', 'galah', 'bagian', 'besar',
+    'gulai', 'bandeng', 'banjar', 'baronang', 'cakalang', 'ikan daun', 'bawal', 'gabus', 'kakap', 
+    'kembung', 'layang', 'mas', 'mujair', 'patin', 'sarden', 'teri', 'tongkol', 'kembang tahu', 
+    'moon', 'ekor', 'labu kuning', 'kedelai', 'buntil', 'bangun-bangun', 'daun bawang merah', 
+    'bakung', 'bebuas', 'belem', 'beluntas', 'cincau', 'gandaria', 'gelang', 'gunda', 'muda', 
+    'jampang', 'jawaw', 'jonghe', 'karet', 'kenikir', 'kesum', 'daun kol sawi', 'kubis', 'kumak',
+    'daun labu', 'leilem', 'leunca', 'lobak', 'lompong', 'mangkokan', 'ambon', 'ndusuk', 'daun oyong', 
+    'pakis', 'paku', 'pangisegar', 'cina', 'poh-pohan', 'selasih', 'semanggi', 'simpur', 'singkil', 
+    'ampenan', 'kopang', 'sintrong', 'tespong', 'talas', 'tales', 'ubi', 'grontol', 'giling', 'pipil', 
+    'putih', 'titi', 'encik', 'sagu', 'katul', 'mostarda', 'nasi', 'pelecing', 'prey', 'taiwan', 'tanah',
+    'semur', 'belanda', 'juice', 
 ]
 
 # ============================================================================

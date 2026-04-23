@@ -434,24 +434,9 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
                             <tr className="bg-blue-50">
                               <th className="text-left text-gray-600 px-2 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, minWidth: '150px' }}>Bahan</th>
                               {/* Texture columns */}
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>T: Bubuk</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>T: Cair</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>T: Kental</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>T: Lembut</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>T: Netral</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>T: Padat</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>T: Renyah</th>
-                              {/* Kategori columns */}
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Lauk</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Sayuran</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Buah</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Bumbu</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Kacang</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Konfeksi</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Minyak</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Serelia</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Susu</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Umbi</th>
+                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>Tekstur Padat</th>
+                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>Tekstur Lembut</th>
+                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>Tekstur Cair</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -460,56 +445,14 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
                                 <td className="px-2 py-2 border border-gray-200 text-gray-800 whitespace-nowrap" style={{ fontWeight: 600, minWidth: '150px' }}>
                                   {item.name}
                                 </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_bubuk === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_bubuk === 1 ? 600 : 400 }}>
-                                  {item.texture_bubuk ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_cair === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_cair === 1 ? 600 : 400 }}>
-                                  {item.texture_cair ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_kental === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_kental === 1 ? 600 : 400 }}>
-                                  {item.texture_kental ? '1' : '0'}
+                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_padat === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_padat === 1 ? 600 : 400 }}>
+                                  {item.texture_padat ? '1' : '0'}
                                 </td>
                                 <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_lembut === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_lembut === 1 ? 600 : 400 }}>
                                   {item.texture_lembut ? '1' : '0'}
                                 </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_netral === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_netral === 1 ? 600 : 400 }}>
-                                  {item.texture_netral ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_padat === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_padat === 1 ? 600 : 400 }}>
-                                  {item.texture_padat ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_renyah === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_renyah === 1 ? 600 : 400 }}>
-                                  {item.texture_renyah ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_lauk === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_lauk === 1 ? 600 : 400 }}>
-                                  {item.kategori_lauk ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_sayuran === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_sayuran === 1 ? 600 : 400 }}>
-                                  {item.kategori_sayuran ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_buah === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_buah === 1 ? 600 : 400 }}>
-                                  {item.kategori_buah ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_bumbu_dan_rempah === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_bumbu_dan_rempah === 1 ? 600 : 400 }}>
-                                  {item.kategori_bumbu_dan_rempah ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_kacang_kacangan === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_kacang_kacangan === 1 ? 600 : 400 }}>
-                                  {item.kategori_kacang_kacangan ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_konfeksioneri === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_konfeksioneri === 1 ? 600 : 400 }}>
-                                  {item.kategori_konfeksioneri ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: (item['kategori_minyak/lemak'] || item.kategori_minyak_lemak) === 1 ? '#2563eb' : '#d1d5db', fontWeight: (item['kategori_minyak/lemak'] || item.kategori_minyak_lemak) === 1 ? 600 : 400 }}>
-                                  {(item['kategori_minyak/lemak'] || item.kategori_minyak_lemak) ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_serelia === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_serelia === 1 ? 600 : 400 }}>
-                                  {item.kategori_serelia ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_susu === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_susu === 1 ? 600 : 400 }}>
-                                  {item.kategori_susu ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_umbi_berpati === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_umbi_berpati === 1 ? 600 : 400 }}>
-                                  {item.kategori_umbi_berpati ? '1' : '0'}
+                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_cair === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_cair === 1 ? 600 : 400 }}>
+                                  {item.texture_cair ? '1' : '0'}
                                 </td>
                               </tr>
                             ))}
@@ -528,24 +471,9 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
                             <tr className="bg-green-50">
                               <th className="text-left text-gray-600 px-2 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, minWidth: '150px' }}>Bahan</th>
                               {/* Texture columns */}
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>T: Bubuk</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>T: Cair</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>T: Kental</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>T: Lembut</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>T: Netral</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>T: Padat</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>T: Renyah</th>
-                              {/* Kategori columns */}
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Lauk</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Sayuran</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Buah</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Bumbu</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Kacang</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Konfeksi</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Minyak</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Serelia</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Susu</th>
-                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>K: Umbi</th>
+                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>Tekstur Padat</th>
+                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>Tekstur Lembut</th>
+                              <th className="text-center text-gray-500 px-1 py-2 border border-gray-200 whitespace-nowrap" style={{ fontWeight: 600, fontSize: '10px' }}>Tekstur Renyah</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -554,56 +482,14 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
                                 <td className="px-2 py-2 border border-gray-200 text-gray-800 whitespace-nowrap" style={{ fontWeight: 600, minWidth: '150px' }}>
                                   {item.name}
                                 </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_bubuk === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_bubuk === 1 ? 600 : 400 }}>
-                                  {item.texture_bubuk ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_cair === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_cair === 1 ? 600 : 400 }}>
-                                  {item.texture_cair ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_kental === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_kental === 1 ? 600 : 400 }}>
-                                  {item.texture_kental ? '1' : '0'}
+                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_padat === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_padat === 1 ? 600 : 400 }}>
+                                  {item.texture_padat ? '1' : '0'}
                                 </td>
                                 <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_lembut === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_lembut === 1 ? 600 : 400 }}>
                                   {item.texture_lembut ? '1' : '0'}
                                 </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_netral === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_netral === 1 ? 600 : 400 }}>
-                                  {item.texture_netral ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_padat === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_padat === 1 ? 600 : 400 }}>
-                                  {item.texture_padat ? '1' : '0'}
-                                </td>
                                 <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.texture_renyah === 1 ? '#059669' : '#d1d5db', fontWeight: item.texture_renyah === 1 ? 600 : 400 }}>
                                   {item.texture_renyah ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_lauk === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_lauk === 1 ? 600 : 400 }}>
-                                  {item.kategori_lauk ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_sayuran === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_sayuran === 1 ? 600 : 400 }}>
-                                  {item.kategori_sayuran ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_buah === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_buah === 1 ? 600 : 400 }}>
-                                  {item.kategori_buah ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_bumbu_dan_rempah === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_bumbu_dan_rempah === 1 ? 600 : 400 }}>
-                                  {item.kategori_bumbu_dan_rempah ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_kacang_kacangan === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_kacang_kacangan === 1 ? 600 : 400 }}>
-                                  {item.kategori_kacang_kacangan ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_konfeksioneri === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_konfeksioneri === 1 ? 600 : 400 }}>
-                                  {item.kategori_konfeksioneri ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: (item['kategori_minyak/lemak'] || item.kategori_minyak_lemak) === 1 ? '#2563eb' : '#d1d5db', fontWeight: (item['kategori_minyak/lemak'] || item.kategori_minyak_lemak) === 1 ? 600 : 400 }}>
-                                  {(item['kategori_minyak/lemak'] || item.kategori_minyak_lemak) ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_serelia === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_serelia === 1 ? 600 : 400 }}>
-                                  {item.kategori_serelia ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_susu === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_susu === 1 ? 600 : 400 }}>
-                                  {item.kategori_susu ? '1' : '0'}
-                                </td>
-                                <td className="px-1 py-2 border border-gray-200 text-center" style={{ color: item.kategori_umbi_berpati === 1 ? '#2563eb' : '#d1d5db', fontWeight: item.kategori_umbi_berpati === 1 ? 600 : 400 }}>
-                                  {item.kategori_umbi_berpati ? '1' : '0'}
                                 </td>
                               </tr>
                             ))}

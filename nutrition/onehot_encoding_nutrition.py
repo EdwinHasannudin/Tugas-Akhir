@@ -61,7 +61,7 @@ CATEGORY_PRIORITY = [
 # Keyword -> texture
 TEXTURE_KEYWORDS = {
     'padat': [
-        'daging', 'ikan', 'ayam', 'sapi', 'kambing', 'dendeng', 'anggur', 'arrowroot',
+        'daging', 'ayam', 'sapi', 'kambing', 'dendeng', 'anggur', 'arrowroot',
         'kandis', 'asam payak', 'bagea', 'beef', 'biji', 'brem', 'baligo', 'batang',
         'rotan', 'rukam', 'bungkil', 'cakalang', 'cantel', 'cue', 'hangop', 'jahe',
         'jampang', 'jawawut', 'lobak', 'karawila', 'kemiri', 'kenari', 'ketapang',
@@ -70,8 +70,8 @@ TEXTURE_KEYWORDS = {
         'lepok', 'terasi', 'ubi', 'wortel', 'babat', 'batatas', 'bebek', 'komba',
         'boros', 'buah merah', 'ruruhi', 'gatot', 'permen', 'geblek', 'gembili', 'gula',
         'kapurung', 'kelapa hutan', 'ketela', 'ketumbar', 'kranji', 'kundur', 'labu',
-        'cengkeh', 'cumi', 'kabuto', 'kawista', 'kerbau', 'lokan', 'melinjo', 'takwa',
-        'talas', 'udang', 'bekasang', 'kakap', 'mujair',
+        'cengkeh', 'kabuto', 'kawista', 'kerbau', 'lokan', 'melinjo', 'takwa',
+        'talas', 'udang', 'bekasang', 'kakap', 'mujair', 'tempe',
     ],
     'lembut': [
         'haruwan', 'bubur', 'kukus', 'rebus', 'nasi', 'alpukat', 'arbei', 'ares',
@@ -89,6 +89,7 @@ TEXTURE_KEYWORDS = {
         'menteng', 'misoa', 'nangka', 'oyek', 'papeda', 'pepaya', 'pisang', 'terong',
         'terung', 'pulut', 'putu', 'rambutan', 'sardines', 'tapai', 'serimping',
         'sirsak', 'spaghetti', 'srikaya', 'suweg', 'tiwul', 'tomat', 'waluh', 'yangko',
+        'ikan', 'cumi',
     ],
     'cair': [
         'sop', 'santan', 'sayur', 'cuka', 'air', 'gulai', 'jeruk', 'lemon', 'lemonade',
@@ -107,7 +108,7 @@ TEXTURE_KEYWORDS = {
         'paria', 'pete', 'peterseli', 'rimbang', 'tekokak', 'toge', 'wijen', 'widaran',
         'buncis', 'caisin', 'encung', 'gandaria', 'paku', 'ganyong', 'jambu',
         'jambu air', 'selada air', 'selada', 'karedok', 'kecipir', 'ketimun', 'markisa',
-        'mostarda', 'pastel', 'salak', 'sawi', 'seledri', 'taoge', 'tempe',
+        'mostarda', 'pastel', 'salak', 'sawi', 'seledri', 'taoge', 
         'teri balado', 'kedondong', 'bunga pepaya', 'cap cai', 'erbis', 'japilus',
         'kool', 'kucai', 'laksa', 'rebon',
     ],

@@ -57,21 +57,30 @@ def to_vector(ingredient):
     """
     Mengubah dictionary bahan menjadi Feature Vector dengan struktur yang sama persis
     seperti di `contentBasedFiltering.ts`.
+    
+    Scaling yang diterapkan:
+    - energy * 2
+    - protein * 3 (paling penting untuk rekomendasi)
+    - fat * 2
+    - carbs * 2
     """
+    # Numeric features dengan scaling yang sama seperti TypeScript
     features = [
-        float(ingredient.get('energy', 0)),
-        float(ingredient.get('protein', 0)),
-        float(ingredient.get('carbs', 0)),
-        float(ingredient.get('fat', 0))
+        float(ingredient.get('energy', 0)) * 2,       # Scale energy 2x
+        float(ingredient.get('protein', 0)) * 3,      # Scale protein 3x
+        float(ingredient.get('fat', 0)) * 2,          # Scale fat 2x
+        float(ingredient.get('carbs', 0)) * 2         # Scale carbs 2x
     ]
     
-    categories = ['lauk', 'sayuran', 'rempah', 'tepung', 'cair']
-    for cat in categories:
-        features.append(1 if ingredient.get('category') == cat else 0)
-        
+    # One-hot encoding untuk texture
     textures = ['padat', 'cair', 'bubuk', 'biji']
     for tex in textures:
         features.append(1 if ingredient.get('texture') == tex else 0)
+    
+    # One-hot encoding untuk category
+    categories = ['lauk', 'sayuran', 'rempah', 'tepung', 'cair']
+    for cat in categories:
+        features.append(1 if ingredient.get('category') == cat else 0)
         
     return features
 
@@ -83,11 +92,15 @@ def cosine_sim(v1, v2):
     if mag1 == 0 or mag2 == 0: return 0
     return dot / (mag1 * mag2)
 
-def euclidean_dist(v1, v2):
-    return math.sqrt(sum((a-b)**2 for a,b in zip(v1, v2)))
+def euclidean_similarity(v1, v2):
+    """Euclidean Distance Similarity: 1 / (1 + dist)"""
+    dist = math.sqrt(sum((a-b)**2 for a,b in zip(v1, v2)))
+    return 1 / (1 + dist)
     
-def manhattan_dist(v1, v2):
-    return sum(abs(a-b) for a,b in zip(v1, v2))
+def manhattan_similarity(v1, v2):
+    """Manhattan Distance Similarity: 1 / (1 + dist)"""
+    dist = sum(abs(a-b) for a,b in zip(v1, v2))
+    return 1 / (1 + dist)
 
 
 def main():
@@ -134,7 +147,7 @@ def main():
     
     qv = to_vector(query_ing)
     
-    # Hitung nilai similarity & distance untuk tiap bahan lain
+    # Hitung nilai similarity untuk tiap bahan lain
     results = []
     for ing in db:
         if ing.get('id') == query_ing.get('id'): 
@@ -142,8 +155,8 @@ def main():
             
         tv = to_vector(ing)
         c = cosine_sim(qv, tv)
-        e = euclidean_dist(qv, tv)
-        m = manhattan_dist(qv, tv)
+        e = euclidean_similarity(qv, tv)
+        m = manhattan_similarity(qv, tv)
         
         results.append({
             'name': ing.get('name', 'Unknown'),
@@ -154,8 +167,8 @@ def main():
         
     # Urutkan dan ambil Top 5 untuk tiap metrik perhitungan
     top_5_cosine = sorted(results, key=lambda x: x['cosine'], reverse=True)[:5]
-    top_5_eucl = sorted(results, key=lambda x: x['euclidean'])[:5]
-    top_5_man = sorted(results, key=lambda x: x['manhattan'])[:5]
+    top_5_eucl = sorted(results, key=lambda x: x['euclidean'], reverse=True)[:5]
+    top_5_man = sorted(results, key=lambda x: x['manhattan'], reverse=True)[:5]
     
     print("\n[4] Mempersiapkan visualisasi grafik (Matplotlib)...")
     
@@ -172,7 +185,7 @@ def main():
     ax1.set_yticks(y_pos1)
     ax1.set_yticklabels(names_c, fontsize=10)
     ax1.invert_yaxis()  
-    ax1.set_xlabel('Score (-1 s/d 1)')
+    ax1.set_xlabel('Similarity Score (0-1)')
     ax1.set_title('Cosine Similarity', pad=10)
     for i, v in enumerate(vals_c):
         # Angka di sebelah kanan kotak, jaraknya dirapatkan (1.015)
@@ -194,8 +207,8 @@ def main():
     ax2.set_yticks(y_pos2)
     ax2.set_yticklabels(names_e, fontsize=10)
     ax2.invert_yaxis()
-    ax2.set_xlabel('Distance (Mulai dari 0)')
-    ax2.set_title('Euclidean Distance', pad=10)
+    ax2.set_xlabel('Similarity Score (0-1)')
+    ax2.set_title('Euclidean Distance Similarity', pad=10)
     for i, v in enumerate(vals_e):
         # Angka di sebelah kanan kotak, jaraknya dirapatkan (1.015)
         ax2.text(1.015, i, f"{v:.4f}", va='center', transform=ax2.get_yaxis_transform(), fontsize=10, fontweight='bold')
@@ -216,8 +229,8 @@ def main():
     ax3.set_yticks(y_pos3)
     ax3.set_yticklabels(names_m, fontsize=10)
     ax3.invert_yaxis()
-    ax3.set_xlabel('Distance (Mulai dari 0)')
-    ax3.set_title('Manhattan Distance', pad=10)
+    ax3.set_xlabel('Similarity Score (0-1)')
+    ax3.set_title('Manhattan Distance Similarity', pad=10)
     for i, v in enumerate(vals_m):
         # Angka di sebelah kanan kotak, jaraknya dirapatkan (1.015)
         ax3.text(1.015, i, f"{v:.4f}", va='center', transform=ax3.get_yaxis_transform(), fontsize=10, fontweight='bold')

@@ -162,16 +162,6 @@ export const ingredientsDatabase: Ingredient[] = [
     texture: 'renyah',
   },
   {
-    id: 'andewi',
-    name: 'Andewi',
-    category: 'sayuran',
-    energy: 0.03,
-    protein: 0.02,
-    carbs: 0.01,
-    fat: 0.0,
-    texture: 'renyah',
-  },
-  {
     id: 'bawang-bombay',
     name: 'Bawang Bombay',
     category: 'sayuran',
@@ -470,16 +460,6 @@ export const ingredientsDatabase: Ingredient[] = [
     carbs: 0.01,
     fat: 0.0,
     texture: 'padat',
-  },
-  {
-    id: 'labu-waluh',
-    name: 'Labu waluh',
-    category: 'sayuran',
-    energy: 0.03,
-    protein: 0.01,
-    carbs: 0.01,
-    fat: 0.0,
-    texture: 'lembut',
   },
   {
     id: 'rebung',

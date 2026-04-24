@@ -71,7 +71,7 @@ TEXTURE_KEYWORDS = {
         'boros', 'buah merah', 'ruruhi', 'gatot', 'permen', 'geblek', 'gembili', 'gula',
         'kapurung', 'kelapa hutan', 'ketela', 'ketumbar', 'kranji', 'kundur', 'labu',
         'cengkeh', 'kabuto', 'kawista', 'kerbau', 'lokan', 'melinjo', 'takwa',
-        'talas', 'udang', 'bekasang', 'kakap', 'mujair', 'tempe',
+        'talas', 'udang', 'bekasang', 'kakap', 'mujair', 'tempe', 'waluh', 
     ],
     'lembut': [
         'haruwan', 'bubur', 'kukus', 'rebus', 'nasi', 'alpukat', 'arbei', 'ares',
@@ -88,7 +88,7 @@ TEXTURE_KEYWORDS = {
         'makaroni', 'mangga', 'manggis', 'margarin', 'masekat', 'matoa', 'melon',
         'menteng', 'misoa', 'nangka', 'oyek', 'papeda', 'pepaya', 'pisang', 'terong',
         'terung', 'pulut', 'putu', 'rambutan', 'sardines', 'tapai', 'serimping',
-        'sirsak', 'spaghetti', 'srikaya', 'suweg', 'tiwul', 'tomat', 'waluh', 'yangko',
+        'sirsak', 'spaghetti', 'srikaya', 'suweg', 'tiwul', 'tomat', 'yangko',
         'ikan', 'cumi',
     ],
     'cair': [

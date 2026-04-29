@@ -63,7 +63,7 @@ export const calculateSimilarity = (ingredient1: Ingredient, ingredient2: Ingred
  * Build feature vector from ingredient (raw scaled numerics + one-hot categoricals)
  * Menggunakan raw values dengan scaling yang sesuai untuk better cosine similarity distribution
  */
-const buildFeatureVector = (ing: Ingredient, allIngredients: Ingredient[]): number[] => {
+export const buildFeatureVector = (ing: Ingredient, allIngredients: Ingredient[]): number[] => {
   // Numeric features dengan scaling yang lebih baik untuk distribusi cosine similarity
   // Raw values dengan multiplier untuk memberi weight lebih pada nutrisi numerik
   const numericScaled = [
@@ -84,20 +84,105 @@ const buildFeatureVector = (ing: Ingredient, allIngredients: Ingredient[]): numb
   return [...numericScaled, ...textureVec, ...categoryVec];
 };
 
-/** Euclidean Distance Similarity: 1 / (1 + dist) */
+/**
+ * Debug: Get feature vector components breakdown
+ */
+export const getFeatureVectorBreakdown = (ing: Ingredient, allIngredients: Ingredient[]): {
+  numericScaled: number[];
+  textures: string[];
+  textureVec: number[];
+  categories: string[];
+  categoryVec: number[];
+  fullVector: number[];
+} => {
+  const numericScaled = [
+    ing.energy * 2,
+    ing.protein * 3,
+    ing.fat * 2,
+    ing.carbs * 2
+  ];
+
+  const textures = [...new Set(allIngredients.map(i => i.texture))].sort();
+  const textureVec = textures.map(t => t === ing.texture ? 1 : 0);
+
+  const categories = [...new Set(allIngredients.map(i => i.category))].sort();
+  const categoryVec = categories.map(c => c === ing.category ? 1 : 0);
+
+  const fullVector = [...numericScaled, ...textureVec, ...categoryVec];
+
+  return {
+    numericScaled,
+    textures,
+    textureVec,
+    categories,
+    categoryVec,
+    fullVector
+  };
+};
+
+/**
+ * Build feature vector: Nutrition + Texture One-Hot (tanpa category)
+ * Vector = [energy, protein, fat, carbs, texture_cair, texture_lembut, texture_padat, texture_renyah]
+ */
+const buildNutritionTextureVector = (ing: Ingredient, allIngredients: Ingredient[]): number[] => {
+  const nutrition = [ing.energy, ing.protein, ing.fat, ing.carbs];
+
+  // One-hot for texture
+  const textures = [...new Set(allIngredients.map(i => i.texture))].sort();
+  const textureVec = textures.map(t => t === ing.texture ? 1 : 0);
+
+  return [...nutrition, ...textureVec];
+};
+
+/**
+ * Euclidean Distance dengan Nutrition + Texture One-Hot
+ * d(x, y) = √(Σ(xi - yi)²)
+ */
+export const euclideanDistance_NutritionOnly = (ing1: Ingredient, ing2: Ingredient, all: Ingredient[]): number => {
+  const v1 = buildNutritionTextureVector(ing1, all);
+  const v2 = buildNutritionTextureVector(ing2, all);
+  const dist = Math.sqrt(v1.reduce((sum, val, i) => sum + (val - v2[i]) ** 2, 0));
+  return dist;
+};
+
+/**
+ * Manhattan Distance dengan Nutrition + Texture One-Hot
+ * d(x, y) = Σ|xi - yi|
+ */
+export const manhattanDistance_NutritionOnly = (ing1: Ingredient, ing2: Ingredient, all: Ingredient[]): number => {
+  const v1 = buildNutritionTextureVector(ing1, all);
+  const v2 = buildNutritionTextureVector(ing2, all);
+  const dist = v1.reduce((sum, val, i) => sum + Math.abs(val - v2[i]), 0);
+  return dist;
+};
+
+/**
+ * Cosine Similarity dengan Nutrition + Texture One-Hot
+ */
+export const cosineSimilarity_NutritionOnly = (ing1: Ingredient, ing2: Ingredient, all: Ingredient[]): number => {
+  const v1 = buildNutritionTextureVector(ing1, all);
+  const v2 = buildNutritionTextureVector(ing2, all);
+  const dot = v1.reduce((sum, val, i) => sum + val * v2[i], 0);
+  const mag1 = Math.sqrt(v1.reduce((sum, val) => sum + val ** 2, 0));
+  const mag2 = Math.sqrt(v2.reduce((sum, val) => sum + val ** 2, 0));
+  if (mag1 === 0 || mag2 === 0) return 0;
+  return dot / (mag1 * mag2);
+};
+
+/** Euclidean Distance (Full Feature Vector): d(x, y) = √(Σ(xi - yi)²) */
 export const euclideanSimilarity = (ing1: Ingredient, ing2: Ingredient, all: Ingredient[]): number => {
   const v1 = buildFeatureVector(ing1, all);
   const v2 = buildFeatureVector(ing2, all);
+  // Raw euclidean distance sesuai rumus: d(x, y) = √(Σ(xi - yi)²)
   const dist = Math.sqrt(v1.reduce((sum, val, i) => sum + (val - v2[i]) ** 2, 0));
-  return 1 / (1 + dist);
+  return dist;
 };
-
-/** Manhattan Distance Similarity: 1 / (1 + dist) */
 export const manhattanSimilarity = (ing1: Ingredient, ing2: Ingredient, all: Ingredient[]): number => {
   const v1 = buildFeatureVector(ing1, all);
   const v2 = buildFeatureVector(ing2, all);
+  // Raw manhattan distance sesuai rumus: d(x, y) = Σ|xi - yi|
   const dist = v1.reduce((sum, val, i) => sum + Math.abs(val - v2[i]), 0);
-  return 1 / (1 + dist);
+  return dist;
 };
 
 /** Cosine Similarity */

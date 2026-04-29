@@ -93,14 +93,18 @@ def cosine_sim(v1, v2):
     return dot / (mag1 * mag2)
 
 def euclidean_similarity(v1, v2):
-    """Euclidean Distance Similarity: 1 / (1 + dist)"""
+    """
+    Euclidean distance: d(x, y) = √(Σ(xi - yi)²)
+    """
     dist = math.sqrt(sum((a-b)**2 for a,b in zip(v1, v2)))
-    return 1 / (1 + dist)
+    return dist
     
 def manhattan_similarity(v1, v2):
-    """Manhattan Distance Similarity: 1 / (1 + dist)"""
+    """
+    Manhattan distance: d(x, y) = Σ|xi - yi|
+    """
     dist = sum(abs(a-b) for a,b in zip(v1, v2))
-    return 1 / (1 + dist)
+    return dist
 
 
 def main():
@@ -166,9 +170,11 @@ def main():
         })
         
     # Urutkan dan ambil Top 5 untuk tiap metrik perhitungan
+    # Catatan: Euclidean & Manhattan = raw distance (nilai kecil = lebih mirip)
+    # Catatan: Cosine = similarity score (nilai besar = lebih mirip)
     top_5_cosine = sorted(results, key=lambda x: x['cosine'], reverse=True)[:5]
-    top_5_eucl = sorted(results, key=lambda x: x['euclidean'], reverse=True)[:5]
-    top_5_man = sorted(results, key=lambda x: x['manhattan'], reverse=True)[:5]
+    top_5_eucl = sorted(results, key=lambda x: x['euclidean'], reverse=False)[:5]  # ascending untuk raw distance
+    top_5_man = sorted(results, key=lambda x: x['manhattan'], reverse=False)[:5]  # ascending untuk raw distance
     
     print("\n[4] Mempersiapkan visualisasi grafik (Matplotlib)...")
     
@@ -207,8 +213,8 @@ def main():
     ax2.set_yticks(y_pos2)
     ax2.set_yticklabels(names_e, fontsize=10)
     ax2.invert_yaxis()
-    ax2.set_xlabel('Similarity Score (0-1)')
-    ax2.set_title('Euclidean Distance Similarity', pad=10)
+    ax2.set_xlabel('Distance (lower = more similar)')
+    ax2.set_title('Euclidean Distance', pad=10)
     for i, v in enumerate(vals_e):
         # Angka di sebelah kanan kotak, jaraknya dirapatkan (1.015)
         ax2.text(1.015, i, f"{v:.4f}", va='center', transform=ax2.get_yaxis_transform(), fontsize=10, fontweight='bold')
@@ -229,8 +235,8 @@ def main():
     ax3.set_yticks(y_pos3)
     ax3.set_yticklabels(names_m, fontsize=10)
     ax3.invert_yaxis()
-    ax3.set_xlabel('Similarity Score (0-1)')
-    ax3.set_title('Manhattan Distance Similarity', pad=10)
+    ax3.set_xlabel('Distance (lower = more similar)')
+    ax3.set_title('Manhattan Distance', pad=10)
     for i, v in enumerate(vals_m):
         # Angka di sebelah kanan kotak, jaraknya dirapatkan (1.015)
         ax3.text(1.015, i, f"{v:.4f}", va='center', transform=ax3.get_yaxis_transform(), fontsize=10, fontweight='bold')

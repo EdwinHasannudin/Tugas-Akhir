@@ -262,10 +262,10 @@ def extract_nutrition_data(excel_path='nutrition/dataset/nutrition_pipeline.xlsx
                 'id': ingredient_id,
                 'name': name,
                 'category': category,
-                'energy': round(energy, 2),
-                'protein': round(protein, 2),
-                'carbs': round(carbs, 2),
-                'fat': round(fat, 2),
+                'energy': energy,
+                'protein': protein,
+                'carbs': carbs,
+                'fat': fat,
                 'texture': texture,
             }
             

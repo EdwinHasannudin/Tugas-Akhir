@@ -68,14 +68,26 @@ def to_vector(ingredient):
 # ====================================================================
 # SIMILARITY & DISTANCE FUNCTIONS
 # ====================================================================
-def euclidean_similarity(v1, v2):
-    """Euclidean distance - normalized ke range 0-1"""
-    dist = math.sqrt(sum((a-b)**2 for a,b in zip(v1, v2)))
+def euclidean_similarity(v1, v2, debug=False):
+    """
+    Euclidean distance: d(x, y) = √(Σ(xi - yi)²)
+    """
+    sum_squares = sum((a - b) ** 2 for a, b in zip(v1, v2))
+    dist = math.sqrt(sum_squares)
+    
+    if debug:
+        print(f"  Euclidean Debug: Σ(xi - yi)² = {sum_squares}, √ = {dist:.5f}")
     return dist
 
-def manhattan_similarity(v1, v2):
-    """Manhattan distance"""
-    return sum(abs(a-b) for a,b in zip(v1, v2))
+def manhattan_similarity(v1, v2, debug=False):
+    """
+    Manhattan distance: d(x, y) = Σ|xi - yi|
+    """
+    dist = sum(abs(a - b) for a, b in zip(v1, v2))
+    
+    if debug:
+        print(f"  Manhattan Debug: Σ|xi - yi| = {dist:.5f}")
+    return dist
 
 def cosine_similarity(v1, v2):
     """Cosine similarity"""
@@ -131,6 +143,10 @@ def main():
         top_k = int(k_input) if k_input.isdigit() else 5
     except ValueError:
         top_k = 5
+    
+    # Debug mode untuk memverifikasi perhitungan manual
+    debug_input = input("[4] Aktifkan debug mode untuk verify perhitungan? (y/n, default: n): ").strip().lower()
+    debug_mode = debug_input == 'y'
         
     query_lower = query.lower()
     query_ing = None
@@ -143,20 +159,25 @@ def main():
         print(f"\n[ERROR] Bahan '{query}' tidak ditemukan di database.")
         return
         
-    print(f"\n[4] Memproses Rekomendasi Top-{top_k} untuk '{query_ing['name']}'...")
+    print(f"\n[5] Memproses Rekomendasi Top-{top_k} untuk '{query_ing['name']}'...")
+    
+    if debug_mode:
+        print(f"\n[DEBUG] Vector Query (first 4 = nutrition): {to_vector(query_ing)[:4]}")
     
     qv = to_vector(query_ing)
     
     results = []
-    for ing in db:
+    for idx, ing in enumerate(db):
         if ing.get('id') == query_ing.get('id'): 
             continue
             
         tv = to_vector(ing)
         
         # Hitung ketiga similarity metrics
-        euc = euclidean_similarity(qv, tv)
-        man = manhattan_similarity(qv, tv)
+        # Debug mode hanya untuk 3 item pertama
+        show_debug = debug_mode and idx < 3
+        euc = euclidean_similarity(qv, tv, debug=show_debug)
+        man = manhattan_similarity(qv, tv, debug=show_debug)
         cos = cosine_similarity(qv, tv)
         
         # Hitung rata-rata dari ketiga metode

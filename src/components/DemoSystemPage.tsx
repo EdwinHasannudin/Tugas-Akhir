@@ -6,7 +6,7 @@ import nutritionRawData from '../data/nutrition_raw_dataset.json';
 import nutritionScaledData from '../data/nutrition_scaled_dataset.json';
 import laukData from '../data/lauk_dataset.json';
 import sayuranData from '../data/sayuran_dataset.json';
-import { euclideanSimilarity, manhattanSimilarity, cosineSimilarity } from '../utils/contentBasedFiltering';
+import { euclideanDistance_NutritionOnly, manhattanDistance_NutritionOnly, cosineSimilarity_NutritionOnly } from '../utils/contentBasedFiltering';
 import { detectIngredientFromDish, searchIngredients } from '../utils/ingredientSearch';
 import { HeaderLogo } from './HeaderLogo';
 
@@ -77,13 +77,15 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
     const recs = ingredientsDatabase
       .filter(item => item.id !== detected.id)
       .map(item => {
-        const euc = euclideanSimilarity(detected, item, all);
-        const man = manhattanSimilarity(detected, item, all);
-        const cos = cosineSimilarity(detected, item, all);
+        const euc = euclideanDistance_NutritionOnly(detected, item, all);
+        const man = manhattanDistance_NutritionOnly(detected, item, all);
+        const cos = cosineSimilarity_NutritionOnly(detected, item, all);
+        // Gunakan raw distance untuk Euclidean dan Manhattan (Nutrition + Texture One-Hot)
+        // Nilai lebih rendah = lebih mirip
         const avg = (euc + man + cos) / 3;
         return { ingredient: item, euc, man, cos, avg };
       })
-      .sort((a, b) => b.avg - a.avg)
+      .sort((a, b) => a.avg - b.avg)
       .slice(0, 5);
 
     setRecommendations(recs);
@@ -300,16 +302,16 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
                               {ing.name}
                             </td>
                             <td className="px-3 py-2 border border-gray-200 text-right text-gray-700">
-                              {typeof ing.energy === 'number' ? ing.energy.toFixed(2) : ing.energy}
+                              {typeof ing.energy === 'number' ? ing.energy.toFixed(4) : ing.energy}
                             </td>
                             <td className="px-3 py-2 border border-gray-200 text-right text-gray-700">
-                              {typeof ing.protein === 'number' ? ing.protein.toFixed(2) : ing.protein}
+                              {typeof ing.protein === 'number' ? ing.protein.toFixed(4) : ing.protein}
                             </td>
                             <td className="px-3 py-2 border border-gray-200 text-right text-gray-700">
-                              {typeof ing.fat === 'number' ? ing.fat.toFixed(2) : ing.fat}
+                              {typeof ing.fat === 'number' ? ing.fat.toFixed(4) : ing.fat}
                             </td>
                             <td className="px-3 py-2 border border-gray-200 text-right text-gray-700">
-                              {typeof ing.carbs === 'number' ? ing.carbs.toFixed(2) : ing.carbs}
+                              {typeof ing.carbs === 'number' ? ing.carbs.toFixed(4) : ing.carbs}
                             </td>
                           </tr>
                         ))}
@@ -590,10 +592,10 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
                           </thead>
                           <tbody>
                             <tr>
-                              <td className="pt-1.5 pr-4 text-gray-700">{rec.ingredient.energy} KKal</td>
-                              <td className="pt-1.5 pr-4 text-gray-700">{rec.ingredient.protein}g</td>
-                              <td className="pt-1.5 pr-4 text-gray-700">{rec.ingredient.fat}g</td>
-                              <td className="pt-1.5 pr-4 text-gray-700">{rec.ingredient.carbs}g</td>
+                              <td className="pt-1.5 pr-4 text-gray-700">{rec.ingredient.energy.toFixed(4)} KKal</td>
+                              <td className="pt-1.5 pr-4 text-gray-700">{rec.ingredient.protein.toFixed(4)}g</td>
+                              <td className="pt-1.5 pr-4 text-gray-700">{rec.ingredient.fat.toFixed(4)}g</td>
+                              <td className="pt-1.5 pr-4 text-gray-700">{rec.ingredient.carbs.toFixed(4)}g</td>
                               <td className="pt-1.5 text-gray-700">{rec.ingredient.texture}</td>
                             </tr>
                           </tbody>

@@ -56,32 +56,14 @@ def load_ingredients_from_ts(filepath):
 def to_vector(ingredient):
     """
     Mengubah dictionary bahan menjadi Feature Vector dengan struktur yang sama persis
-    seperti di `contentBasedFiltering.ts`.
-    
-    Scaling yang diterapkan:
-    - energy * 2
-    - protein * 3 (paling penting untuk rekomendasi)
-    - fat * 2
-    - carbs * 2
+    seperti di `contentBasedFiltering.ts` (Nutrition Only: 4 dimensi murni).
     """
-    # Numeric features dengan scaling yang sama seperti TypeScript
     features = [
-        float(ingredient.get('energy', 0)) * 2,       # Scale energy 2x
-        float(ingredient.get('protein', 0)) * 3,      # Scale protein 3x
-        float(ingredient.get('fat', 0)) * 2,          # Scale fat 2x
-        float(ingredient.get('carbs', 0)) * 2         # Scale carbs 2x
+        float(ingredient.get('energy', 0)),
+        float(ingredient.get('protein', 0)),
+        float(ingredient.get('fat', 0)),
+        float(ingredient.get('carbs', 0))
     ]
-    
-    # One-hot encoding untuk texture
-    textures = ['padat', 'cair', 'bubuk', 'biji']
-    for tex in textures:
-        features.append(1 if ingredient.get('texture') == tex else 0)
-    
-    # One-hot encoding untuk category
-    categories = ['lauk', 'sayuran', 'rempah', 'tepung', 'cair']
-    for cat in categories:
-        features.append(1 if ingredient.get('category') == cat else 0)
-        
     return features
 
 
@@ -162,19 +144,25 @@ def main():
         e = euclidean_similarity(qv, tv)
         m = manhattan_similarity(qv, tv)
         
+        category_match = 0 if ing.get('category') == query_ing.get('category') else 1
+        texture_match = 0 if ing.get('texture') == query_ing.get('texture') else 1
+        
+        cos_distance = 1 - c
+        avg = (e + m + cos_distance) / 3
+
         results.append({
             'name': ing.get('name', 'Unknown'),
             'cosine': c,
             'euclidean': e,
-            'manhattan': m
+            'manhattan': m,
+            'avg': avg,
+            'category_match': category_match,
+            'texture_match': texture_match
         })
         
-    # Urutkan dan ambil Top 5 untuk tiap metrik perhitungan
-    # Catatan: Euclidean & Manhattan = raw distance (nilai kecil = lebih mirip)
-    # Catatan: Cosine = similarity score (nilai besar = lebih mirip)
-    top_5_cosine = sorted(results, key=lambda x: x['cosine'], reverse=True)[:5]
-    top_5_eucl = sorted(results, key=lambda x: x['euclidean'], reverse=False)[:5]  # ascending untuk raw distance
-    top_5_man = sorted(results, key=lambda x: x['manhattan'], reverse=False)[:5]  # ascending untuk raw distance
+    # Urutkan dan ambil Top 5 berdasarkan perhitungan Average (Sama seperti Demo System)
+    # PRIORITAS: category_match -> texture_match -> avg
+    top_5_overall = sorted(results, key=lambda x: (x['category_match'], x['texture_match'], x['avg']))[:5]
     
     print("\n[4] Mempersiapkan visualisasi grafik (Matplotlib)...")
     
@@ -183,8 +171,8 @@ def main():
     fig1.canvas.manager.set_window_title('Cosine Similarity Analysis')
     fig1.suptitle(f"Analisis Similaritas Bahan: {query_ing['name']} (Top 5 Rekomendasi Teratas)", fontsize=13, fontweight='bold')
     
-    names_c = [r['name'] for r in top_5_cosine]
-    vals_c = [r['cosine'] for r in top_5_cosine]
+    names_c = [r['name'] for r in top_5_overall]
+    vals_c = [r['cosine'] for r in top_5_overall]
     y_pos1 = np.arange(len(names_c))
     
     ax1.barh(y_pos1, vals_c, color='skyblue', edgecolor='black', height=0.6)
@@ -205,44 +193,48 @@ def main():
     fig2.canvas.manager.set_window_title('Euclidean Distance Analysis')
     fig2.suptitle(f"Analisis Similaritas Bahan: {query_ing['name']} (Top 5 Rekomendasi Teratas)", fontsize=13, fontweight='bold')
     
-    names_e = [r['name'] for r in top_5_eucl]
-    vals_e = [r['euclidean'] for r in top_5_eucl]
+    names_e = [r['name'] for r in top_5_overall]
+    raw_vals_e = [r['euclidean'] for r in top_5_overall]
+    # Konversi distance ke similarity (1 / (1 + dist)) agar visual bar lebih panjang = lebih baik
+    sim_vals_e = [1 / (1 + v) for v in raw_vals_e]
     y_pos2 = np.arange(len(names_e))
     
-    ax2.barh(y_pos2, vals_e, color='salmon', edgecolor='black', height=0.6)
+    ax2.barh(y_pos2, sim_vals_e, color='salmon', edgecolor='black', height=0.6)
     ax2.set_yticks(y_pos2)
     ax2.set_yticklabels(names_e, fontsize=10)
     ax2.invert_yaxis()
-    ax2.set_xlabel('Distance (lower = more similar)')
-    ax2.set_title('Euclidean Distance', pad=10)
-    for i, v in enumerate(vals_e):
-        # Angka di sebelah kanan kotak, jaraknya dirapatkan (1.015)
-        ax2.text(1.015, i, f"{v:.4f}", va='center', transform=ax2.get_yaxis_transform(), fontsize=10, fontweight='bold')
+    ax2.set_xlabel('Similarity Score (1 / (1 + Distance))')
+    ax2.set_title('Euclidean Distance (Converted to Similarity)', pad=10)
+    for i, (sim, raw) in enumerate(zip(sim_vals_e, raw_vals_e)):
+        # Tampilkan Raw Distance sebagai text di sebelah bar
+        ax2.text(1.015, i, f"Dist: {raw:.4f}", va='center', transform=ax2.get_yaxis_transform(), fontsize=10, fontweight='bold')
     ax2.grid(axis='x', linestyle='--', alpha=0.7)
     ax2.set_axisbelow(True)
-    fig2.tight_layout(rect=[0, 0, 0.95, 1]) # Margin kanan 5% saja
+    fig2.tight_layout(rect=[0, 0, 0.95, 1])
 
     # ---- 3. Manhattan Plot ----
     fig3, ax3 = plt.subplots(figsize=(8, 5))
     fig3.canvas.manager.set_window_title('Manhattan Distance Analysis')
     fig3.suptitle(f"Analisis Similaritas Bahan: {query_ing['name']} (Top 5 Rekomendasi Teratas)", fontsize=13, fontweight='bold')
     
-    names_m = [r['name'] for r in top_5_man]
-    vals_m = [r['manhattan'] for r in top_5_man]
+    names_m = [r['name'] for r in top_5_overall]
+    raw_vals_m = [r['manhattan'] for r in top_5_overall]
+    # Konversi distance ke similarity (1 / (1 + dist)) agar visual bar lebih panjang = lebih baik
+    sim_vals_m = [1 / (1 + v) for v in raw_vals_m]
     y_pos3 = np.arange(len(names_m))
     
-    ax3.barh(y_pos3, vals_m, color='lightgreen', edgecolor='black', height=0.6)
+    ax3.barh(y_pos3, sim_vals_m, color='lightgreen', edgecolor='black', height=0.6)
     ax3.set_yticks(y_pos3)
     ax3.set_yticklabels(names_m, fontsize=10)
     ax3.invert_yaxis()
-    ax3.set_xlabel('Distance (lower = more similar)')
-    ax3.set_title('Manhattan Distance', pad=10)
-    for i, v in enumerate(vals_m):
-        # Angka di sebelah kanan kotak, jaraknya dirapatkan (1.015)
-        ax3.text(1.015, i, f"{v:.4f}", va='center', transform=ax3.get_yaxis_transform(), fontsize=10, fontweight='bold')
+    ax3.set_xlabel('Similarity Score (1 / (1 + Distance))')
+    ax3.set_title('Manhattan Distance (Converted to Similarity)', pad=10)
+    for i, (sim, raw) in enumerate(zip(sim_vals_m, raw_vals_m)):
+        # Tampilkan Raw Distance sebagai text di sebelah bar
+        ax3.text(1.015, i, f"Dist: {raw:.4f}", va='center', transform=ax3.get_yaxis_transform(), fontsize=10, fontweight='bold')
     ax3.grid(axis='x', linestyle='--', alpha=0.7)
     ax3.set_axisbelow(True)
-    fig3.tight_layout(rect=[0, 0, 0.95, 1]) # Margin kanan 5% saja
+    fig3.tight_layout(rect=[0, 0, 0.95, 1])
     
     print("\n[INFO] Menampilkan grafik visualisasi...")
     print("       (3 jendela halaman grafik telah terbuka. Silahkan cek tiap jedela Window tersebut.)")

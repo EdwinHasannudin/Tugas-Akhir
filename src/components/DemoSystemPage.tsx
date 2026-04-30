@@ -79,13 +79,23 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
         const euc = euclideanDistance_NutritionOnly(detected, item);
         const man = manhattanDistance_NutritionOnly(detected, item);
         const cos = cosineSimilarity_NutritionOnly(detected, item);
-        // Gunakan raw distance untuk Euclidean dan Manhattan (Nutrition Only - 4 dimensi)
-        // Nilai lebih rendah = lebih mirip
-        const avg = (euc + man + cos) / 3;
+        
+        // Konversi Cosine Similarity menjadi Cosine Distance agar selaras dengan Euclidean & Manhattan
+        // Euclidean & Manhattan: lebih kecil = lebih mirip
+        // Cosine Similarity: lebih besar = lebih mirip -> Cosine Distance (1 - cos): lebih kecil = lebih mirip
+        const cos_distance = 1 - cos;
+        const avg = (euc + man + cos_distance) / 3;
         return { ingredient: item, euc, man, cos, avg };
       })
       .sort((a, b) => {
-        // Prioritas 1: Tekstur yang sama (tekstur yang cocok di depan)
+        // Prioritas 1: Kategori yang sama (kategori yang cocok di depan)
+        const categoryMatch_a = a.ingredient.category === detected.category ? 0 : 1;
+        const categoryMatch_b = b.ingredient.category === detected.category ? 0 : 1;
+        if (categoryMatch_a !== categoryMatch_b) {
+          return categoryMatch_a - categoryMatch_b;
+        }
+
+        // Prioritas 2: Tekstur yang sama (tekstur yang cocok di depan)
         const textureMatch_a = a.ingredient.texture === detected.texture ? 0 : 1;
         const textureMatch_b = b.ingredient.texture === detected.texture ? 0 : 1;
         

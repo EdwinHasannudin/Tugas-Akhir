@@ -48,21 +48,13 @@ def load_ingredients_from_ts(filepath):
     return ingredients
 
 def to_vector(ingredient):
-    """Mengubah dictionary ke bentuk vektor numerik fitur"""
+    """Mengubah dictionary ke bentuk vektor numerik fitur (Nutrition Only: 4 dimensi murni)"""
     features = [
         float(ingredient.get('energy', 0)),
         float(ingredient.get('protein', 0)),
-        float(ingredient.get('carbs', 0)),
-        float(ingredient.get('fat', 0))
+        float(ingredient.get('fat', 0)),
+        float(ingredient.get('carbs', 0))
     ]
-    categories = ['lauk', 'sayuran', 'rempah', 'tepung', 'cair']
-    for cat in categories:
-        features.append(1 if ingredient.get('category') == cat else 0)
-        
-    textures = ['padat', 'cair', 'bubuk', 'biji']
-    for tex in textures:
-        features.append(1 if ingredient.get('texture') == tex else 0)
-        
     return features
 
 # ====================================================================
@@ -139,10 +131,10 @@ def main():
         return
         
     try:
-        k_input = input("[3] Berapa target Top-K rekomendasi yang ingin dievaluasi (default 5): ").strip()
-        top_k = int(k_input) if k_input.isdigit() else 5
+        k_input = input("[3] Berapa target Top-K rekomendasi yang ingin dievaluasi (default 10): ").strip()
+        top_k = int(k_input) if k_input.isdigit() else 10
     except ValueError:
-        top_k = 5
+        top_k = 10
     
     # Debug mode untuk memverifikasi perhitungan manual
     debug_input = input("[4] Aktifkan debug mode untuk verify perhitungan? (y/n, default: n): ").strip().lower()
@@ -180,15 +172,23 @@ def main():
         man = manhattan_similarity(qv, tv, debug=show_debug)
         cos = cosine_similarity(qv, tv)
         
+        # Konversi Cosine Similarity menjadi Cosine Distance agar selaras (makin kecil makin mirip)
+        cos_distance = 1 - cos
         # Hitung rata-rata dari ketiga metode
-        avg = (euc + man + cos) / 3
+        avg = (euc + man + cos_distance) / 3
         
         # Hitung MAE dan RMSE untuk setiap bahan pengganti
         mae = calc_mae(qv, tv)
         rmse = calc_rmse(qv, tv)
         
+        # Cek kecocokan kategori dan tekstur
+        category_match = 0 if ing.get('category') == query_ing.get('category') else 1
+        texture_match = 0 if ing.get('texture') == query_ing.get('texture') else 1
+        
         results.append({
             'name': ing.get('name', 'Unknown'),
+            'category_match': category_match,
+            'texture_match': texture_match,
             'vector': tv,
             'euclidean': euc,
             'manhattan': man,
@@ -198,8 +198,8 @@ def main():
             'rmse_score': rmse
         })
         
-    # Ambil Top K berdasarkan rata-rata (Avg)
-    top_k_results = sorted(results, key=lambda x: x['avg'])[:top_k]
+    # Ambil Top K berdasarkan rata-rata (Avg) dengan Prioritas Kategori dan Tekstur
+    top_k_results = sorted(results, key=lambda x: (x['category_match'], x['texture_match'], x['avg']))[:top_k]
     
     # Hitung rata-rata metrics dari top-k
     avg_euc = sum(item['euclidean'] for item in top_k_results) / len(top_k_results)

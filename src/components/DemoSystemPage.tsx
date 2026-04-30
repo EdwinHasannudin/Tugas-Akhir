@@ -73,19 +73,29 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
     // Set detected ingredient (dari ingredientsDatabase)
     setDetectedIngredient(detected);
 
-    const all = ingredientsDatabase;
     const recs = ingredientsDatabase
       .filter(item => item.id !== detected.id)
       .map(item => {
-        const euc = euclideanDistance_NutritionOnly(detected, item, all);
-        const man = manhattanDistance_NutritionOnly(detected, item, all);
-        const cos = cosineSimilarity_NutritionOnly(detected, item, all);
-        // Gunakan raw distance untuk Euclidean dan Manhattan (Nutrition + Texture One-Hot)
+        const euc = euclideanDistance_NutritionOnly(detected, item);
+        const man = manhattanDistance_NutritionOnly(detected, item);
+        const cos = cosineSimilarity_NutritionOnly(detected, item);
+        // Gunakan raw distance untuk Euclidean dan Manhattan (Nutrition Only - 4 dimensi)
         // Nilai lebih rendah = lebih mirip
         const avg = (euc + man + cos) / 3;
         return { ingredient: item, euc, man, cos, avg };
       })
-      .sort((a, b) => a.avg - b.avg)
+      .sort((a, b) => {
+        // Prioritas 1: Tekstur yang sama (tekstur yang cocok di depan)
+        const textureMatch_a = a.ingredient.texture === detected.texture ? 0 : 1;
+        const textureMatch_b = b.ingredient.texture === detected.texture ? 0 : 1;
+        
+        if (textureMatch_a !== textureMatch_b) {
+          return textureMatch_a - textureMatch_b;
+        }
+        
+        // Prioritas 2: Average metrics (lebih rendah = lebih mirip)
+        return a.avg - b.avg;
+      })
       .slice(0, 5);
 
     setRecommendations(recs);

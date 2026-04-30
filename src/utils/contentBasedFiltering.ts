@@ -121,47 +121,45 @@ export const getFeatureVectorBreakdown = (ing: Ingredient, allIngredients: Ingre
 };
 
 /**
- * Build feature vector: Nutrition + Texture One-Hot (tanpa category)
- * Vector = [energy, protein, fat, carbs, texture_cair, texture_lembut, texture_padat, texture_renyah]
+ * Build feature vector: Nutrition Only (4 dimensi)
+ * Vector = [energy, protein, fat, carbs]
+ * CATATAN: Hanya menggunakan 4 profil nutrisi untuk perhitungan cosine similarity
+ * Texture dan Category TIDAK dimasukkan agar hasil perhitungan akurat
  */
-const buildNutritionTextureVector = (ing: Ingredient, allIngredients: Ingredient[]): number[] => {
-  const nutrition = [ing.energy, ing.protein, ing.fat, ing.carbs];
-
-  // One-hot for texture
-  const textures = [...new Set(allIngredients.map(i => i.texture))].sort();
-  const textureVec = textures.map(t => t === ing.texture ? 1 : 0);
-
-  return [...nutrition, ...textureVec];
+const buildNutritionVector = (ing: Ingredient): number[] => {
+  return [ing.energy, ing.protein, ing.fat, ing.carbs];
 };
 
 /**
- * Euclidean Distance dengan Nutrition + Texture One-Hot
+ * Euclidean Distance dengan Nutrition Only (4 dimensi)
  * d(x, y) = √(Σ(xi - yi)²)
  */
-export const euclideanDistance_NutritionOnly = (ing1: Ingredient, ing2: Ingredient, all: Ingredient[]): number => {
-  const v1 = buildNutritionTextureVector(ing1, all);
-  const v2 = buildNutritionTextureVector(ing2, all);
+export const euclideanDistance_NutritionOnly = (ing1: Ingredient, ing2: Ingredient): number => {
+  const v1 = buildNutritionVector(ing1);
+  const v2 = buildNutritionVector(ing2);
   const dist = Math.sqrt(v1.reduce((sum, val, i) => sum + (val - v2[i]) ** 2, 0));
   return dist;
 };
 
 /**
- * Manhattan Distance dengan Nutrition + Texture One-Hot
+ * Manhattan Distance dengan Nutrition Only (4 dimensi)
  * d(x, y) = Σ|xi - yi|
  */
-export const manhattanDistance_NutritionOnly = (ing1: Ingredient, ing2: Ingredient, all: Ingredient[]): number => {
-  const v1 = buildNutritionTextureVector(ing1, all);
-  const v2 = buildNutritionTextureVector(ing2, all);
+export const manhattanDistance_NutritionOnly = (ing1: Ingredient, ing2: Ingredient): number => {
+  const v1 = buildNutritionVector(ing1);
+  const v2 = buildNutritionVector(ing2);
   const dist = v1.reduce((sum, val, i) => sum + Math.abs(val - v2[i]), 0);
   return dist;
 };
 
 /**
- * Cosine Similarity dengan Nutrition + Texture One-Hot
+ * Cosine Similarity dengan Nutrition Only (4 dimensi)
+ * cosine(A, B) = (A · B) / (||A|| × ||B||)
+ * Vector = [energy, protein, fat, carbs]
  */
-export const cosineSimilarity_NutritionOnly = (ing1: Ingredient, ing2: Ingredient, all: Ingredient[]): number => {
-  const v1 = buildNutritionTextureVector(ing1, all);
-  const v2 = buildNutritionTextureVector(ing2, all);
+export const cosineSimilarity_NutritionOnly = (ing1: Ingredient, ing2: Ingredient): number => {
+  const v1 = buildNutritionVector(ing1);
+  const v2 = buildNutritionVector(ing2);
   const dot = v1.reduce((sum, val, i) => sum + val * v2[i], 0);
   const mag1 = Math.sqrt(v1.reduce((sum, val) => sum + val ** 2, 0));
   const mag2 = Math.sqrt(v2.reduce((sum, val) => sum + val ** 2, 0));

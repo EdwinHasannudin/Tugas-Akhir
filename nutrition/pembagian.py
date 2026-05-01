@@ -62,7 +62,7 @@ KEYWORDS_TO_REMOVE = [
     'pakis', 'paku', 'pangisegar', 'cina', 'poh-pohan', 'selasih', 'semanggi', 'simpur', 'singkil', 
     'ampenan', 'kopang', 'sintrong', 'tespong', 'talas', 'tales', 'ubi', 'grontol', 'giling', 'pipil', 
     'putih', 'titi', 'encik', 'sagu', 'katul', 'mostarda', 'nasi', 'pelecing', 'prey', 'taiwan', 'tanah',
-    'semur', 'belanda', 'juice', 'andewi', 'waluh'
+    'semur', 'belanda', 'juice', 'andewi', 'waluh',
 ]
 
 # ============================================================================

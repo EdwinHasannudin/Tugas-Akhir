@@ -187,7 +187,7 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
         </div>
       </header>
 
-      <div className="max-w-5xl mx-auto px-6 py-10">
+      <div className="max-w-4xl mx-auto px-6 py-10">
         {!showResults ? (
           <>
             {/* Title */}
@@ -200,7 +200,7 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
             </div>
 
             {/* Input Card */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6 max-w-2xl">
+            <div className="bg-white border border-gray-200 rounded-lg p-6">
               <label className="block text-gray-900 mb-3" style={{ fontSize: '15px', fontWeight: 600 }}>
                 Mau masak apa?
               </label>

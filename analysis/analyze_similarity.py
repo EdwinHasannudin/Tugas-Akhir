@@ -203,8 +203,7 @@ def main():
     ax2.set_yticks(y_pos2)
     ax2.set_yticklabels(names_e, fontsize=10)
     ax2.invert_yaxis()
-    ax2.set_xlabel('Similarity Score (1 / (1 + Distance))')
-    ax2.set_title('Euclidean Distance (Converted to Similarity)', pad=10)
+    ax2.set_xlabel('Similarity Score (0-1)')
     for i, (sim, raw) in enumerate(zip(sim_vals_e, raw_vals_e)):
         # Tampilkan Raw Distance sebagai text di sebelah bar
         ax2.text(1.015, i, f"Dist: {raw:.4f}", va='center', transform=ax2.get_yaxis_transform(), fontsize=10, fontweight='bold')
@@ -227,8 +226,7 @@ def main():
     ax3.set_yticks(y_pos3)
     ax3.set_yticklabels(names_m, fontsize=10)
     ax3.invert_yaxis()
-    ax3.set_xlabel('Similarity Score (1 / (1 + Distance))')
-    ax3.set_title('Manhattan Distance (Converted to Similarity)', pad=10)
+    ax3.set_xlabel('Similarity Score (0-1)')
     for i, (sim, raw) in enumerate(zip(sim_vals_m, raw_vals_m)):
         # Tampilkan Raw Distance sebagai text di sebelah bar
         ax3.text(1.015, i, f"Dist: {raw:.4f}", va='center', transform=ax3.get_yaxis_transform(), fontsize=10, fontweight='bold')

@@ -11,6 +11,7 @@ export interface Ingredient {
   carbs: number;
   fat: number;
   texture: string;
+  isVegan?: boolean;
 }
 
 export interface Recipe {

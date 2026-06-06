@@ -60,67 +60,6 @@ export const calculateSimilarity = (ingredient1: Ingredient, ingredient2: Ingred
 };
 
 /**
- * Build feature vector from ingredient (raw scaled numerics + one-hot categoricals)
- * Menggunakan raw values dengan scaling yang sesuai untuk better cosine similarity distribution
- */
-export const buildFeatureVector = (ing: Ingredient, allIngredients: Ingredient[]): number[] => {
-  // Numeric features dengan scaling yang lebih baik untuk distribusi cosine similarity
-  // Raw values dengan multiplier untuk memberi weight lebih pada nutrisi numerik
-  const numericScaled = [
-    ing.energy * 2,      // Scale energy 2x 
-    ing.protein * 3,     // Scale protein 3x (lebih penting untuk rekomendasi)
-    ing.fat * 2,         // Scale fat 2x
-    ing.carbs * 2        // Scale carbs 2x
-  ];
-
-  // One-hot for texture
-  const textures = [...new Set(allIngredients.map(i => i.texture))].sort();
-  const textureVec = textures.map(t => t === ing.texture ? 1 : 0);
-
-  // One-hot for category
-  const categories = [...new Set(allIngredients.map(i => i.category))].sort();
-  const categoryVec = categories.map(c => c === ing.category ? 1 : 0);
-
-  return [...numericScaled, ...textureVec, ...categoryVec];
-};
-
-/**
- * Debug: Get feature vector components breakdown
- */
-export const getFeatureVectorBreakdown = (ing: Ingredient, allIngredients: Ingredient[]): {
-  numericScaled: number[];
-  textures: string[];
-  textureVec: number[];
-  categories: string[];
-  categoryVec: number[];
-  fullVector: number[];
-} => {
-  const numericScaled = [
-    ing.energy * 2,
-    ing.protein * 3,
-    ing.fat * 2,
-    ing.carbs * 2
-  ];
-
-  const textures = [...new Set(allIngredients.map(i => i.texture))].sort();
-  const textureVec = textures.map(t => t === ing.texture ? 1 : 0);
-
-  const categories = [...new Set(allIngredients.map(i => i.category))].sort();
-  const categoryVec = categories.map(c => c === ing.category ? 1 : 0);
-
-  const fullVector = [...numericScaled, ...textureVec, ...categoryVec];
-
-  return {
-    numericScaled,
-    textures,
-    textureVec,
-    categories,
-    categoryVec,
-    fullVector
-  };
-};
-
-/**
  * Build feature vector: Nutrition Only (4 dimensi)
  * Vector = [energy, protein, fat, carbs]
  * CATATAN: Hanya menggunakan 4 profil nutrisi untuk perhitungan cosine similarity
@@ -160,33 +99,6 @@ export const manhattanDistance_NutritionOnly = (ing1: Ingredient, ing2: Ingredie
 export const cosineSimilarity_NutritionOnly = (ing1: Ingredient, ing2: Ingredient): number => {
   const v1 = buildNutritionVector(ing1);
   const v2 = buildNutritionVector(ing2);
-  const dot = v1.reduce((sum, val, i) => sum + val * v2[i], 0);
-  const mag1 = Math.sqrt(v1.reduce((sum, val) => sum + val ** 2, 0));
-  const mag2 = Math.sqrt(v2.reduce((sum, val) => sum + val ** 2, 0));
-  if (mag1 === 0 || mag2 === 0) return 0;
-  return dot / (mag1 * mag2);
-};
-
-/** Euclidean Distance (Full Feature Vector): d(x, y) = √(Σ(xi - yi)²) */
-export const euclideanSimilarity = (ing1: Ingredient, ing2: Ingredient, all: Ingredient[]): number => {
-  const v1 = buildFeatureVector(ing1, all);
-  const v2 = buildFeatureVector(ing2, all);
-  // Raw euclidean distance sesuai rumus: d(x, y) = √(Σ(xi - yi)²)
-  const dist = Math.sqrt(v1.reduce((sum, val, i) => sum + (val - v2[i]) ** 2, 0));
-  return dist;
-};
-export const manhattanSimilarity = (ing1: Ingredient, ing2: Ingredient, all: Ingredient[]): number => {
-  const v1 = buildFeatureVector(ing1, all);
-  const v2 = buildFeatureVector(ing2, all);
-  // Raw manhattan distance sesuai rumus: d(x, y) = Σ|xi - yi|
-  const dist = v1.reduce((sum, val, i) => sum + Math.abs(val - v2[i]), 0);
-  return dist;
-};
-
-/** Cosine Similarity */
-export const cosineSimilarity = (ing1: Ingredient, ing2: Ingredient, all: Ingredient[]): number => {
-  const v1 = buildFeatureVector(ing1, all);
-  const v2 = buildFeatureVector(ing2, all);
   const dot = v1.reduce((sum, val, i) => sum + val * v2[i], 0);
   const mag1 = Math.sqrt(v1.reduce((sum, val) => sum + val ** 2, 0));
   const mag2 = Math.sqrt(v2.reduce((sum, val) => sum + val ** 2, 0));

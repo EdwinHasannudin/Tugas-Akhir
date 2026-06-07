@@ -183,10 +183,11 @@ def main():
     ax1.set_xlabel('Nilai Similarity (Semakin Besar Semakin Baik)')
     ax1.set_title('Cosine Similarity', pad=10)
     for i, v in enumerate(vals_c):
-        ax1.text(v + 0.01, i, f"{v:.4f}", va='center', fontsize=10, fontweight='bold')
+        # Angka di sebelah kanan kotak, jaraknya dirapatkan (1.015)
+        ax1.text(1.015, i, f"{v:.4f}", va='center', transform=ax1.get_yaxis_transform(), fontsize=10, fontweight='bold')    
     ax1.grid(axis='x', linestyle='--', alpha=0.7)
     ax1.set_axisbelow(True)
-    fig1.tight_layout(rect=[0, 0, 0.95, 1])
+    fig1.tight_layout(rect=[0, 0, 0.95, 1]) # Margin kanan untuk text
 
     # ---- 2. Euclidean Plot ----
     fig2, ax2 = plt.subplots(figsize=(8, 5))
@@ -205,10 +206,11 @@ def main():
     ax2.set_xlabel('Nilai Jarak (Semakin Kecil Semakin Baik)')
     ax2.set_title('Euclidean Distance', pad=10)
     for i, raw in enumerate(raw_vals_e):
-        ax2.text(raw + 0.01 * max(raw_vals_e or [1]), i, f"{raw:.4f}", va='center', fontsize=10, fontweight='bold')
+        # Tampilkan Raw Distance sebagai text di sebelah bar
+        ax2.text(1.015, i, f"{raw:.4f}", va='center', transform=ax2.get_yaxis_transform(), fontsize=10, fontweight='bold')
     ax2.grid(axis='x', linestyle='--', alpha=0.7)
     ax2.set_axisbelow(True)
-    fig2.tight_layout(rect=[0, 0, 0.95, 1])
+    fig2.tight_layout(rect=[0, 0, 0.95, 1]) # Margin kanan untuk text
 
     # ---- 3. Manhattan Plot ----
     fig3, ax3 = plt.subplots(figsize=(8, 5))
@@ -227,10 +229,11 @@ def main():
     ax3.set_xlabel('Nilai Jarak (Semakin Kecil Semakin Baik)')
     ax3.set_title('Manhattan Distance', pad=10)
     for i, raw in enumerate(raw_vals_m):
-        ax3.text(raw + 0.01 * max(raw_vals_m or [1]), i, f"{raw:.4f}", va='center', fontsize=10, fontweight='bold')
+        # Tampilkan Raw Distance sebagai text di sebelah bar
+        ax3.text(1.015, i, f"{raw:.4f}", va='center', transform=ax3.get_yaxis_transform(), fontsize=10, fontweight='bold')
     ax3.grid(axis='x', linestyle='--', alpha=0.7)
     ax3.set_axisbelow(True)
-    fig3.tight_layout(rect=[0, 0, 0.95, 1])
+    fig3.tight_layout(rect=[0, 0, 0.95, 1]) # Margin kanan untuk text
     
     print("\n[INFO] Menampilkan grafik visualisasi...")
     print("       (3 jendela halaman grafik telah terbuka. Silahkan cek tiap jedela Window tersebut.)")

@@ -241,6 +241,8 @@ if __name__ == "__main__":
         # ---- Step 1d: Simpan hasil scaling ----
         print(f"\n[WRITE] Menambahkan sheet 'Nutrition Scaled'...")
         
+        df_scaled = df_scaled.drop(columns=['image'], errors='ignore')
+        
         with pd.ExcelWriter(output_file, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
             df_scaled.to_excel(writer, sheet_name='Nutrition Scaled', index=False)
             _format_excel_sheet(writer.sheets['Nutrition Scaled'])

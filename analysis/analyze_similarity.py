@@ -171,42 +171,41 @@ def main():
     fig1.canvas.manager.set_window_title('Cosine Similarity Analysis')
     fig1.suptitle(f"Analisis Similaritas Bahan: {query_ing['name']} (Top 5 Rekomendasi Teratas)", fontsize=13, fontweight='bold')
     
-    names_c = [r['name'] for r in top_5_overall]
-    vals_c = [r['cosine'] for r in top_5_overall]
+    cosine_sorted = sorted(top_5_overall, key=lambda r: r['cosine'], reverse=True)
+    names_c = [r['name'] for r in cosine_sorted]
+    vals_c = [r['cosine'] for r in cosine_sorted]
     y_pos1 = np.arange(len(names_c))
     
     ax1.barh(y_pos1, vals_c, color='skyblue', edgecolor='black', height=0.6)
     ax1.set_yticks(y_pos1)
     ax1.set_yticklabels(names_c, fontsize=10)
     ax1.invert_yaxis()  
-    ax1.set_xlabel('Similarity Score (0-1)')
+    ax1.set_xlabel('Nilai Similarity (Semakin Besar Semakin Baik)')
     ax1.set_title('Cosine Similarity', pad=10)
     for i, v in enumerate(vals_c):
-        # Angka di sebelah kanan kotak, jaraknya dirapatkan (1.015)
-        ax1.text(1.015, i, f"{v:.4f}", va='center', transform=ax1.get_yaxis_transform(), fontsize=10, fontweight='bold')
+        ax1.text(v + 0.01, i, f"{v:.4f}", va='center', fontsize=10, fontweight='bold')
     ax1.grid(axis='x', linestyle='--', alpha=0.7)
     ax1.set_axisbelow(True)
-    fig1.tight_layout(rect=[0, 0, 0.95, 1]) # Margin kanan 5% saja
+    fig1.tight_layout(rect=[0, 0, 0.95, 1])
 
     # ---- 2. Euclidean Plot ----
     fig2, ax2 = plt.subplots(figsize=(8, 5))
     fig2.canvas.manager.set_window_title('Euclidean Distance Analysis')
     fig2.suptitle(f"Analisis Similaritas Bahan: {query_ing['name']} (Top 5 Rekomendasi Teratas)", fontsize=13, fontweight='bold')
     
-    names_e = [r['name'] for r in top_5_overall]
-    raw_vals_e = [r['euclidean'] for r in top_5_overall]
-    # Konversi distance ke similarity (1 / (1 + dist)) agar visual bar lebih panjang = lebih baik
-    sim_vals_e = [1 / (1 + v) for v in raw_vals_e]
+    euclidean_sorted = sorted(top_5_overall, key=lambda r: r['euclidean'])
+    names_e = [r['name'] for r in euclidean_sorted]
+    raw_vals_e = [r['euclidean'] for r in euclidean_sorted]
     y_pos2 = np.arange(len(names_e))
     
-    ax2.barh(y_pos2, sim_vals_e, color='salmon', edgecolor='black', height=0.6)
+    ax2.barh(y_pos2, raw_vals_e, color='salmon', edgecolor='black', height=0.6)
     ax2.set_yticks(y_pos2)
     ax2.set_yticklabels(names_e, fontsize=10)
     ax2.invert_yaxis()
-    ax2.set_xlabel('Similarity Score (0-1)')
-    for i, (sim, raw) in enumerate(zip(sim_vals_e, raw_vals_e)):
-        # Tampilkan Raw Distance sebagai text di sebelah bar
-        ax2.text(1.015, i, f"Dist: {raw:.4f}", va='center', transform=ax2.get_yaxis_transform(), fontsize=10, fontweight='bold')
+    ax2.set_xlabel('Nilai Jarak (Semakin Kecil Semakin Baik)')
+    ax2.set_title('Euclidean Distance', pad=10)
+    for i, raw in enumerate(raw_vals_e):
+        ax2.text(raw + 0.01 * max(raw_vals_e or [1]), i, f"{raw:.4f}", va='center', fontsize=10, fontweight='bold')
     ax2.grid(axis='x', linestyle='--', alpha=0.7)
     ax2.set_axisbelow(True)
     fig2.tight_layout(rect=[0, 0, 0.95, 1])
@@ -216,20 +215,19 @@ def main():
     fig3.canvas.manager.set_window_title('Manhattan Distance Analysis')
     fig3.suptitle(f"Analisis Similaritas Bahan: {query_ing['name']} (Top 5 Rekomendasi Teratas)", fontsize=13, fontweight='bold')
     
-    names_m = [r['name'] for r in top_5_overall]
-    raw_vals_m = [r['manhattan'] for r in top_5_overall]
-    # Konversi distance ke similarity (1 / (1 + dist)) agar visual bar lebih panjang = lebih baik
-    sim_vals_m = [1 / (1 + v) for v in raw_vals_m]
+    manhattan_sorted = sorted(top_5_overall, key=lambda r: r['manhattan'])
+    names_m = [r['name'] for r in manhattan_sorted]
+    raw_vals_m = [r['manhattan'] for r in manhattan_sorted]
     y_pos3 = np.arange(len(names_m))
     
-    ax3.barh(y_pos3, sim_vals_m, color='lightgreen', edgecolor='black', height=0.6)
+    ax3.barh(y_pos3, raw_vals_m, color='lightgreen', edgecolor='black', height=0.6)
     ax3.set_yticks(y_pos3)
     ax3.set_yticklabels(names_m, fontsize=10)
     ax3.invert_yaxis()
-    ax3.set_xlabel('Similarity Score (0-1)')
-    for i, (sim, raw) in enumerate(zip(sim_vals_m, raw_vals_m)):
-        # Tampilkan Raw Distance sebagai text di sebelah bar
-        ax3.text(1.015, i, f"Dist: {raw:.4f}", va='center', transform=ax3.get_yaxis_transform(), fontsize=10, fontweight='bold')
+    ax3.set_xlabel('Nilai Jarak (Semakin Kecil Semakin Baik)')
+    ax3.set_title('Manhattan Distance', pad=10)
+    for i, raw in enumerate(raw_vals_m):
+        ax3.text(raw + 0.01 * max(raw_vals_m or [1]), i, f"{raw:.4f}", va='center', fontsize=10, fontweight='bold')
     ax3.grid(axis='x', linestyle='--', alpha=0.7)
     ax3.set_axisbelow(True)
     fig3.tight_layout(rect=[0, 0, 0.95, 1])

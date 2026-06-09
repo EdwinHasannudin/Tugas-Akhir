@@ -26,7 +26,7 @@ export function DemoStepNavigator({ dishInput, detectedIngredient, currentStep, 
           <div>
             <p className="text-xs text-gray-400">Masakan: {dishInput}</p>
             <p className="text-gray-900" style={{ fontSize: '15px', fontWeight: 600 }}>
-              Bahan terdeteksi: {detectedIngredient?.name}
+              Bahan pengganti dari: {detectedIngredient?.name}
               <span className="text-gray-400 ml-1" style={{ fontWeight: 400, fontSize: '13px' }}>
                 ({detectedIngredient?.category})
               </span>

@@ -14,7 +14,7 @@ export function DemoSearchInput({ dishInput, setDishInput, onSearch, onKeyPress 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6">
       <label className="block text-gray-900 mb-3" style={{ fontSize: '15px', fontWeight: 600 }}>
-        Mau masak apa?
+        Mau cari pengganti bahan masakan apa?
       </label>
 
       <div className="flex gap-2 mb-4">

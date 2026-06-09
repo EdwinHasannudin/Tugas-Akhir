@@ -200,7 +200,13 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
             {currentStep === 3 && detectedIngredient && (
               <div>
                 <div className="bg-white border border-gray-200 rounded-lg p-5 mb-4">
-                  <p className="text-xs text-gray-400 mb-2">Nutrisi bahan target</p>
+                  <p className="text-xs text-gray-500 mb-2">Nutrisi bahan dari 
+                    <span className="text-sm text-gray-900 mb-4" style={{ fontWeight: 600 }}> {detectedIngredient.name}</span>
+                      <span className="text-gray-400 ml-1" style={{ fontWeight: 400, fontSize: '13px' }}>
+                        ({detectedIngredient.category})
+                      </span>
+                  </p>
+
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
@@ -226,7 +232,7 @@ export function DemoSystemPage({ onBack }: DemoSystemPageProps) {
                 </div>
 
                 <div className="mb-4">
-                  <h2 className="text-gray-900 mb-1" style={{ fontSize: '16px', fontWeight: 600 }}>Rekomendasi Pengganti</h2>
+                  <h2 className="text-gray-900 mb-1" style={{ fontSize: '16px', fontWeight: 600 }}>Rekomendasi Bahan Pengganti</h2>
                   <p className="text-xs text-gray-400">Top 5 bahan diurutkan berdasarkan rata-rata (Avg) dari Euclidean, Manhattan, dan Cosine Similarity</p>
                 </div>
 

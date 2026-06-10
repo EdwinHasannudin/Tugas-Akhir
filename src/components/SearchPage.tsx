@@ -39,7 +39,7 @@ export function SearchPage({ onDemoSystem }: SearchPageProps) {
             <div className="mb-10">
               <p className="text-sm text-blue-600 mb-3 tracking-wide uppercase">Content Based Filtering</p>
               <h1 className="text-3xl text-gray-900 mb-4 leading-snug" style={{ fontWeight: 700 }}>
-                Sistem Rekomendasi<br />Bahan Pengganti Masakan
+                Sistem Rekomendasi<br />Pengganti Bahan Masakan
               </h1>
               <p className="text-gray-500 max-w-lg leading-relaxed" style={{ fontSize: '15px' }}>
                 Cari alternatif bahan masakan berdasarkan kesamaan nutrisi, tekstur, dan kategori. 

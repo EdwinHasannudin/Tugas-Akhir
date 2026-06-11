@@ -1,5 +1,4 @@
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-import type { Ingredient } from '../App';
+import { ArrowRight } from 'lucide-react';
 
 interface NutritionSummary {
   energy: number;

@@ -60,10 +60,10 @@ export function DemoScalingStep({
               {rawDataForDisplay.map((ing) => (
                 <tr key={ing.id}>
                   <td className="px-3 py-2 border border-gray-200 text-gray-800">{ing.name}</td>
-                  <td className="px-3 py-2 border border-gray-200 text-right text-gray-700">{ing.energy.toFixed(4)}</td>
-                  <td className="px-3 py-2 border border-gray-200 text-right text-gray-700">{ing.protein.toFixed(4)}</td>
-                  <td className="px-3 py-2 border border-gray-200 text-right text-gray-700">{ing.fat.toFixed(4)}</td>
-                  <td className="px-3 py-2 border border-gray-200 text-right text-gray-700">{ing.carbs.toFixed(4)}</td>
+                  <td className="px-3 py-2 border border-gray-200 text-right text-gray-700">{ing.energy.toFixed(1)}</td>
+                  <td className="px-3 py-2 border border-gray-200 text-right text-gray-700">{ing.protein.toFixed(1)}</td>
+                  <td className="px-3 py-2 border border-gray-200 text-right text-gray-700">{ing.fat.toFixed(1)}</td>
+                  <td className="px-3 py-2 border border-gray-200 text-right text-gray-700">{ing.carbs.toFixed(1)}</td>
                 </tr>
               ))}
             </tbody>
